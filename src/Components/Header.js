@@ -32,12 +32,6 @@ const Header = () => {
                
                   <div class="mega-menu">
                     <div class="mega-menu-bar row pt-0">
-                    
-
-                     
-
-
-                    
                     </div>
                   </div>
                 </li>

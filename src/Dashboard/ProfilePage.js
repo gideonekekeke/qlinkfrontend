@@ -13,7 +13,7 @@ const myId = current?._id
 
   const [name, setName] = React.useState()
   const [email, setEmail] = React.useState()
-  // const [ava, setName] = React.useState('')
+  const [avatar, setAvatar] = React.useState('')
   const [jobTitle, setJobTitle] = React.useState()
   const [salary, setSalary] = React.useState()
   const [age, setAge] = React.useState()
@@ -24,6 +24,7 @@ const myId = current?._id
   const [location, setLocation] = React.useState()
   const [phoneNumber, setPhoneNumber] = React.useState()
   const [loading, setLoading] = React.useState(false)
+  const [prevUrl, setPrevUrl] = React.useState("")
   const toggleLoad = ()=>{
         setLoading(true)
     }
@@ -68,8 +69,70 @@ const myId = current?._id
   }
 
 
-  const updateProfile = (updatedData) => {
+     const [data, setData] = React.useState([]);
+		
+
+			const getUser = async () => {
+				const res = await axios
+					.get(`https://newqlinksbackapi.vercel.app/api/user/${myId}`)
+					.then((response) => {
+						console.log("hdjfkkdeuhjfjjf", response?.data?.data);
+						setData(response?.data?.data);
+					});
+			};
+
+
+
+      const imageOnchange = (e)=>{
+        const file = e.target.files[0]
+        const saveUrl = URL.createObjectURL(file)
+
+        setAvatar(file)
+        setPrevUrl(saveUrl)
+        console.log(file)
+      }
+
+			React.useEffect(() => {
+				getUser();
+				console.log("my data oooogg", data);
+			}, [myId]);
+
+
+  const ChangeImageProfile = async() => {
+
+    const config = {
+       headers : {
+         "content-type" : "multipart/formdata"
+       }
+    }
+
+    const formdata = new FormData()
+
+    formdata.append("avatar", avatar)
  
+       await axios
+					.patch(
+						`https://qlinkappi.herokuapp.com/api/user/${myId}/edituserAvatar`,
+					 formdata,config
+					)
+					.then((response) => {
+						// console.log("update",response?.data.data)
+						// edit profile from localstorage
+						const profile = JSON.parse(localStorage.getItem("dataUsers"));
+						Object.keys(response?.data?.data).forEach((key) => {
+							profile[key] = response?.data?.data[key];
+						});
+						localStorage.setItem("dataUsers", JSON.stringify(profile));
+						swal({
+							title: " Successfull",
+							text: "Your Profile Has been Updated!",
+							icon: "success",
+							button: "ok",
+						}).then((value) => {
+							swal(window.location.reload());
+						});
+						setLoading(false);
+					});
 }
 
 
@@ -77,158 +140,215 @@ const myId = current?._id
 
 
   return (
-    <div className='page-wrapper dashboard'>
-  <DashHeader />
-  <section style = {{marginTop : '100px'}} class="user-dashboard">
-    
-      <div class="dashboard-outer">
-        <div class="upper-title-box">
-          <h3>My Profile</h3>
-          <div class="text">Ready to jump back in?</div>
-        </div>
+		<div className='page-wrapper dashboard'>
+			<DashHeader />
+			<section style={{ marginTop: "100px" }} class='user-dashboard'>
+				<div class='dashboard-outer'>
+					<div class='upper-title-box'>
+						<h3>My Profile</h3>
+						<div class='text'>Ready to jump back in?</div>
+					</div>
 
-        <div class="row">
-          <div class="col-lg-12">
-         
-            <div class="ls-widget">
-              <div class="tabs-box">
-                <div class="widget-title">
-                  <h4>My Profile</h4>
-                </div>
+					<div class='row'>
+						<div class='col-lg-12'>
+							<div class='ls-widget'>
+								<div class='tabs-box'>
+									<div class='widget-title'>
+										<h4>My Profile</h4>
+									</div>
 
-                <div class="widget-content">
+									<div class='widget-content'>
+										<form
+										method="POST" enctype = "multipart/form-data"
+											onSubmit={(e) => {
+												e.preventDefault();
+												ChangeImageProfile();
+											}}>
+											<div class='uploading-outer'>
+												<div
+													style={{ display: "flex", flexDirection: "column" }}
+													class='uploadButton'>
+													<input
+														class='uploadButton-input'
+														type='file'
+														id='upload'
+														onChange={imageOnchange}
+													/>
+													<label
+														class='uploadButton-button ripple-effect'
+														for='upload'>
+														Browse Pic
+													</label>
+													{avatar ? (
+														<div style={{ marginTop: "10px" }} class=''>
+															<button
+																type='submit'
+																class='theme-btn btn-style-one'>
+																Save and Upload Image
+															</button>
+														</div>
+													) : (
+														<div style={{ marginTop: "10px" }} class=''>
+															<button
+																disabled
+																style={{ cursor: "not-allowed" }}
+																class='theme-btn btn-style-one'>
+																Save and Upload Image
+															</button>
+														</div>
+													)}
+													<span class='uploadButton-file-name'></span>
+												</div>
+												{avatar ? (
+													<div class='text'>{avatar?.name}</div>
+												) : (
+													<div class='text'>
+														Max file size is 1MB, Minimum dimension: 330x300 And
+														Suitable files are .jpg & .png
+													</div>
+												)}
+											</div>
+										</form>
 
-                  <div class="uploading-outer">
-                    <div class="uploadButton">
-                      <input class="uploadButton-input" type="file" name="attachments[]" accept="image/*, application/pdf" id="upload" multiple />
-                      <label class="uploadButton-button ripple-effect" for="upload">Browse Logo</label>
-                      <span class="uploadButton-file-name"></span>
-                    </div>
-                    <div class="text">Max file size is 1MB, Minimum dimension: 330x300 And Suitable files are .jpg & .png</div>
-                  </div>
+										<form
+											onSubmit={(e) => {
+												postData();
+												e.preventDefault();
+												toggleLoad();
+											}}
+											class='default-form'>
+											<div class='row'>
+												<div class='form-group col-lg-6 col-md-12'>
+													<label>Full Name</label>
+													<input
+														onChange={(e) => {
+															setName(e.target.value);
+														}}
+														defaultValue={data?.name}
+														type='text'
+														placeholder=''
+													/>
+												</div>
 
-                  <form 
-                  onSubmit={(e)=>{
-                    postData()
-                    e.preventDefault()
-                    toggleLoad()
+												<div class='form-group col-lg-6 col-md-12'>
+													<label>Job Title</label>
+													<input
+														onChange={(e) => {
+															setJobTitle(e.target.value);
+														}}
+														type='text'
+														defaultValue={data?.jobTitle}
+														name='name'
+														placeholder='UI Designer'
+													/>
+												</div>
 
-                  }}
-                  class="default-form">
-                    <div class="row">
-                   
-                      <div class="form-group col-lg-6 col-md-12">
-                        <label>Full Name</label>
-                        <input onChange={(e)=>{
-                          setName(e.target.value)
-                         
-                        }} 
-                         defaultValue={current?.name}
-                        type="text"  placeholder=""/>
-                      </div>
+												<div class='form-group col-lg-6 col-md-12'>
+													<label>Phone</label>
+													<input
+														onChange={(e) => {
+															setPhoneNumber(e.target.value);
+														}}
+														type='text'
+														defaultValue={data?.phoneNumber}
+														name='name'
+														placeholder='0 123 456 7890'
+													/>
+												</div>
 
-                    
-                      <div class="form-group col-lg-6 col-md-12">
-                        <label>Job Title</label>
-                        <input onChange={(e)=>{
-                          setJobTitle(e.target.value)
-                        }}  type="text" defaultValue={current?.jobTitle} name="name" placeholder="UI Designer"/>
-                      </div>
+												<div class='form-group col-lg-6 col-md-12'>
+													<label>Email address</label>
+													<input
+														onChange={(e) => {
+															setEmail(e.target.value);
+														}}
+														type='text'
+														value={data?.email}
+														defaultValue={current?.email}
+														name='name'
+													/>
+												</div>
 
-                     
-                      <div class="form-group col-lg-6 col-md-12">
-                        <label>Phone</label>
-                        <input onChange={(e)=>{
-                          setPhoneNumber(e.target.value)
-                        }}  type="text" defaultValue={current?.phoneNumber} name="name" placeholder="0 123 456 7890"/>
-                      </div>
+												<div class='form-group col-lg-6 col-md-12'>
+													<label>Website</label>
+													<input
+														onChange={(e) => {
+															setWebsiteUrl(e.target.value);
+														}}
+														defaultValue={data?.websiteUrl}
+														type='text'
+														name='name'
+														placeholder='www.jerome.com'
+													/>
+												</div>
 
-                      
-                      <div class="form-group col-lg-6 col-md-12">
-                        <label>Email address</label>
-                        <input
-                        onChange={(e)=>{
-                          setEmail(e.target.value)
-                        }} 
-                        type="text" value={current?.email}  defaultValue={current?.email} name="name"/>
-                      </div>
+												<div class='form-group col-lg-6 col-md-12'>
+													<label>Salary </label>
+													<input
+														onChange={(e) => {
+															setSalary(e.target.value);
+														}}
+														type='text'
+														defaultValue={data?.salary}
+														name='name'
+														placeholder='salary'
+													/>
+												</div>
 
-                   
-                      <div class="form-group col-lg-6 col-md-12">
-                        <label>Website</label>
-                        <input 
-                        onChange={(e)=>{
-                          setWebsiteUrl(e.target.value)
-                        }} 
-                        defaultValue={current?.websiteUrl} type="text" name="name" placeholder="www.jerome.com"/>
-                      </div>
+												<div class='form-group col-lg-6 col-md-12'>
+													<label>Experience</label>
+													<input
+														onChange={(e) => {
+															setExperience(e.target.value);
+														}}
+														type='text'
+														defaultValue={data?.experience}
+														name='name'
+														placeholder='5-10 Years'
+													/>
+												</div>
 
-                      
-                      <div class="form-group col-lg-6 col-md-12">
-                        <label>Salary </label>
-                        <input 
-                        onChange={(e)=>{
-                          setSalary(e.target.value)
-                        }} 
-                        type="text" defaultValue={current?.salary} name="name" placeholder="salary"/>
-                      </div>
-                   
-                   
+												<div class='form-group col-lg-6 col-md-12'>
+													<label>Age</label>
+													<select
+														onChange={(e) => {
+															setAge(e.target.value);
+														}}
+														defaultValue={data?.age}
+														class='chosen-select'>
+														<option value='23 -27'>18 - 27 Years</option>
+														<option value='28 -37'>28 - 37 Years</option>
+														<option value='38 -47'>38 - 47 Years</option>
+														<option value='48 - 57'>48 - 57 Years</option>
+													</select>
+												</div>
 
-                      <div class="form-group col-lg-6 col-md-12">
-                        <label>Experience</label>
-                        <input 
-                        onChange={(e)=>{
-                          setExperience(e.target.value)
-                        }} 
-                        type="text" defaultValue={current?.experience} name="name" placeholder="5-10 Years"/>
-                      </div>
+												<div class='form-group col-lg-6 col-md-12'>
+													<label>Location</label>
+													<input
+														onChange={(e) => {
+															setLocation(e.target.value);
+														}}
+														type='text'
+														defaultValue={data?.location}
+														name='name'
+														placeholder='Certificate'
+													/>
+												</div>
 
-                   
-                      <div class="form-group col-lg-6 col-md-12">
-                        <label>Age</label>
-                        <select
-                        onChange={(e)=>{
-                          setAge(e.target.value)
-                        }} 
-                        defaultValue={current?.age} class="chosen-select">
-                          <option value = "23 -27">18 - 27 Years</option>
-                          <option value = "28 -37">28 - 37 Years</option>
-                          <option value = "38 -47">38 - 47 Years</option>
-                          <option value = "48 - 57">48 - 57 Years</option>
-                        </select>
-                      </div>
+												<div class='form-group col-lg-6 col-md-12'>
+													<label>Gender</label>
+													<select
+														onChange={(e) => {
+															setGender(e.target.value);
+														}}
+														class='chosen-select'>
+														<option>Male</option>
+														<option>Female</option>
+													</select>
+												</div>
 
-                     
-                      <div class="form-group col-lg-6 col-md-12">
-                        <label>Location</label>
-                        <input 
-                        onChange={(e)=>{
-                          setLocation(e.target.value)
-                        }} 
-                        type="text" defaultValue={current?.location} name="name" placeholder="Certificate"/>
-                      </div>
-                   
-                      <div class="form-group col-lg-6 col-md-12">
-                        <label>Gender</label>
-                        <select
-                        onChange={(e)=>{
-                          setGender(e.target.value)
-                        }} 
-                        class="chosen-select">
-                          <option>Male</option>
-                          <option>Female</option>
-                        
-                        </select>
-                      </div>
-
-
-                   
-                    
-
-
-                     
-                      {/* <div class="form-group col-lg-6 col-md-12">
+												{/* <div class="form-group col-lg-6 col-md-12">
                         <label>Allow In Search & Listing</label>
                         <select class="chosen-select">
                           <option>Yes</option>
@@ -236,27 +356,25 @@ const myId = current?._id
                         </select>
                       </div> */}
 
-                      <div class="form-group col-lg-12 col-md-12">
-                        <label>Description</label>
-                        <textarea 
-                        onChange={(e)=>{
-                          setDescription(e.target.value)
-                        }} 
-                        placeholder="Spent several years working on sheep on Wall Street. Had moderate success investing in Yugo's on Wall Street. Managed a small team buying and selling Pogo sticks for farmers. Spent several years licensing licorice in West Palm Beach, FL. Developed several new methods for working it banjos in the aftermarket. Spent a weekend importing banjos in West Palm Beach, FL.In this position, the Software Engineer collaborates with Evention's Development team to continuously enhance our current software solutions as well as create new solutions to eliminate the back-office operations and management challenges present"></textarea>
-                      </div>
+												<div class='form-group col-lg-12 col-md-12'>
+													<label>Description</label>
+													<textarea
+														onChange={(e) => {
+															setDescription(e.target.value);
+														}}
+														placeholder="Spent several years working on sheep on Wall Street. Had moderate success investing in Yugo's on Wall Street. Managed a small team buying and selling Pogo sticks for farmers. Spent several years licensing licorice in West Palm Beach, FL. Developed several new methods for working it banjos in the aftermarket. Spent a weekend importing banjos in West Palm Beach, FL.In this position, the Software Engineer collaborates with Evention's Development team to continuously enhance our current software solutions as well as create new solutions to eliminate the back-office operations and management challenges present"></textarea>
+												</div>
 
-                   
-                      <div class="form-group col-lg-6 col-md-12">
-                        <button class="theme-btn btn-style-one">Save</button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
+												<div class='form-group col-lg-6 col-md-12'>
+													<button class='theme-btn btn-style-one'>Save</button>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
 
-            
-            {/* <div class="ls-widget">
+							{/* <div class="ls-widget">
               <div class="tabs-box">
                 <div class="widget-title">
                   <h4>Social Network</h4>
@@ -378,17 +496,13 @@ const myId = current?._id
                 </div>
               </div>
             </div> */}
-           {
-             loading ? <Loading loading = {loading}/> : null
-           }
-          </div>
-
-
-        </div>
-      </div>
-    </section>
-    </div>
-  )
+							{loading ? <Loading loading={loading} /> : null}
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	);
 }
 
 export default ProfilePage

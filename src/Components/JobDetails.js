@@ -227,7 +227,6 @@ const JobDetails = () => {
                       <h5 class="company-name">InVision</h5>
                       <a href="#" class="profile-link">View company profile</a>
                     </div>
-
                     <ul class="company-info">
                       <li>Primary industry: <span>Software</span></li>
                       <li>Company size: <span>501-1,000</span></li>

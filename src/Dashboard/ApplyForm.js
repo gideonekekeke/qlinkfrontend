@@ -1,121 +1,287 @@
+import axios from 'axios'
 import React from 'react'
+import { useParams } from 'react-router-dom'
+import swal from 'sweetalert'
+import Loading from '../Components/LoadState'
 import DashHeader from './DashHeader'
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
+
+import * as yup from "yup";
+
 
 const ApplyForm = () => {
+const {id} = useParams()
+
+const useID = id;
+
+
+const [image, setImage] = React.useState('')
+const[loading, setLoading] = React.useState(false)
+
+const [avatar, setAvatar] = React.useState('')
+const [userID, setUserID] = React.useState('3765364773')
+
+const onPreview = (e)=>{
+const file = e.target.files[0]
+const checkPreview = URL.createObjectURL(file)
+setAvatar(file)
+console.log(avatar)
+setImage(file);
+
+}
+
+ const proModel = yup.object().shape({
+		name: yup.string().required("field must not be empty"),
+		email: yup.string().required("field must not be empty"),
+		location: yup.string().required("field must not be empty"),
+		experience: yup.string().required("field must not be empty"),
+		phoneNumber: yup.string().required("field must not be empty"),
+	
+		// password:yup.string().required("password needed").min(6),
+		// confirmpassword:yup.string().oneOf([yup.ref('password'), null])
+ });
+
+ 
+   const {
+			register,
+			handleSubmit,
+			formState: { errors },
+		} = useForm({
+			resolver: yupResolver(proModel),
+		});
+
+		  const submit = handleSubmit(async (data) => {
+				console.log("testing value", data);
+				console.log("image state", image);
+				const { name, email, location, phoneNumber, experience } = data;
+
+				const formdata = new FormData();
+
+				formdata.append("name", name);
+				formdata.append("email", email);
+				formdata.append("location", location);
+				formdata.append("experience", experience);
+				formdata.append("phoneNumber", phoneNumber);
+				formdata.append("image", image);
+				//   formdata.append("userID", userID);
+
+				const config = {
+					headers: {
+						"content-type": "multipart/formdata",
+					},
+				};
+
+				await axios
+					.post(
+						`https://qlinkappi.herokuapp.com/api/jobs/${useID}/apply`,
+						formdata,
+						config,
+					)
+					.then((response) => {
+						if (response === 201) {
+							swal({
+								title: "uploaded successful!",
+								text: "You can clicked the button!",
+								icon: "success",
+								button: "ok",
+							});
+							setLoading(false);
+						}
+					})
+					.catch((error) => {
+						swal({
+							title: "An Error occured",
+							text: "You can clicked the button!",
+							icon: "error",
+							button: "ok",
+						});
+						setLoading(false);
+					});
+			});
+
+const toggleLoad = ()=>{
+  setLoading(true)
+}
+
+const uploadForm = async()=>{
+
+//   const formdata = new FormData()
+
+//   formdata.append("name", name)
+//   formdata.append("email", email)
+//   formdata.append("location", location)
+//   formdata.append("experience", experience);
+//   formdata.append("phoneNumber", phoneNumber);
+//   formdata.append("image", image);
+//   formdata.append("userID", userID);
+
+
+ 
+	
+
+			// const url = `http://localhost:4444/api/content/${id}/createContent`;
+			// const url = `localhost:5050/api/product/${id}/add`;
+
+			// await axios
+			// 	.post(
+			// 		`https://qlinkappi.herokuapp.com/api/jobs/${id}/apply`,
+			// 		formdata,
+			// 		config,
+			// 	)
+			// 	.then((response) => {
+			// 		if (response === 201) {
+			// 			swal({
+			// 				title: "uploaded successful!",
+			// 				text: "You can clicked the button!",
+			// 				icon: "success",
+			// 				button: "ok",
+			// 			});
+			// 			setLoading(false);
+			// 		}
+			// 	})
+			// 	.catch((error) => {
+			// 		swal({
+			// 			title: "An Error occured",
+			// 			text: "You can clicked the button!",
+			// 			icon: "error",
+			// 			button: "ok",
+			// 		});
+			// 		setLoading(false);
+			// 	});
+  
+}
+
+
+
+
   return (
-    <div className='page-wrapper dashboard'>
-  <DashHeader />
-  <section style = {{marginTop : '100px'}} class="user-dashboard">
-    
-      <div class="dashboard-outer">
-        <div class="upper-title-box">
-          <h3>Application Form</h3>
-          <div class="text">Ready to jump back in?</div>
-        </div>
+		<div className='page-wrapper dashboard'>
+			<DashHeader />
+			<section style={{ marginTop: "100px" }} class='user-dashboard'>
+				<div class='dashboard-outer'>
+					<div class='upper-title-box'>
+						<h3>Application Form</h3>
+						<div class='text'>Ready to jump back in?</div>
+					</div>
 
-        <div class="row">
-          <div class="col-lg-12">
-         
-            <div class="ls-widget">
-              <div class="tabs-box">
-                <div class="widget-title">
-                  <h4>fill all details correctly</h4>
-                </div>
+					<div class='row'>
+						<div class='col-lg-12'>
+							<div class='ls-widget'>
+								<div class='tabs-box'>
+									<div class='widget-title'>
+										<h4>fill all details correctly</h4>
+									</div>
 
-                <div class="widget-content">
+									<div class='widget-content'>
+										<div class='uploading-outer'>
+											<div class='uploadButton'>
+												<input
+													// onChange={onPreview}
+													class='uploadButton-input'
+													type='file'
+													id='upload'
+												/>
+												<label
+													class='uploadButton-button ripple-effect'
+													for='upload'></label>
+												Upload your Cv
+												<span class='uploadButton-file-name'></span>
+											</div>
+											{avatar ? (
+												<div class='text'>{avatar?.name}</div>
+											) : (
+												<div class='text'>
+													Max file size is 1MB, Minimum dimension: 330x300 And
+													Suitable files are .jpg & .png
+												</div>
+											)}
+										</div>
 
-                  <div class="uploading-outer">
-                    <div class="uploadButton">
-                      <input class="uploadButton-input" type="file" name="attachments[]" accept="image/*, application/pdf" id="upload" multiple />
-                      <label class="uploadButton-button ripple-effect" for="upload"></label>Upload your Cv
-                      <span class="uploadButton-file-name"></span>
-                    </div>
-                    <div class="text">Max file size is 1MB, Minimum dimension: 330x300 And Suitable files are .jpg & .png</div>
-                  </div>
+										<form
+											onSubmit={(e) => {
+												e.preventDefault();
+                                                     submit()
+												toggleLoad();
+											}}
+											class='default-form'>
+											<input
+												onChange={onPreview}
+												type='file'
+											/>
+											<div class='row'>
+												<div class='form-group col-lg-6 col-md-12'>
+													<label>Full Name</label>
+													<input
+														{...register("name")}
+														type='text'
+													
+														placeholder='Jerome'
+													/>
+												</div>
 
-                  <form class="default-form">
-                    <div class="row">
-                   
-                      <div class="form-group col-lg-6 col-md-12">
-                        <label>Full Name</label>
-                        <input type="text" name="name" placeholder="Jerome"/>
-                      </div>
+												<div class='form-group col-lg-6 col-md-12'>
+													<label>Email</label>
+													<input
+														{...register("email")}
+														type='text'
+													
+														placeholder='email@gmail.com'
+													/>
+												</div>
 
-                    
-                      <div class="form-group col-lg-6 col-md-12">
-                        <label>Email</label>
-                        <input type="text" name="name" placeholder="email@gmail.com"/>
-                      </div>
+												<div class='form-group col-lg-6 col-md-12'>
+													<label>Phone</label>
+													<input
+														{...register("phoneNumber")}
+														type='text'
+													
+														placeholder='0 123 456 7890'
+													/>
+												</div>
 
-                     
-                      <div class="form-group col-lg-6 col-md-12">
-                        <label>Phone</label>
-                        <input type="text" name="name" placeholder="0 123 456 7890"/>
-                      </div>
-
-                      
-                     
-
-                   
-                    
-
-                      
-                      {/* <div class="form-group col-lg-6 col-md-12">
+												{/* <div class="form-group col-lg-6 col-md-12">
                         <label>Salary </label>
                         <input type="text" name="name" placeholder="salary"/>
                       </div> */}
-                   
-                   
 
-                      <div class="form-group col-lg-6 col-md-12">
-                        <label>Experience</label>
-                        <input type="text" name="name" placeholder="5-10 Years"/>
-                      </div>
+												<div class='form-group col-lg-6 col-md-12'>
+													<label>Experience</label>
+													<input
+														{...register("experience")}
+														type='text'
+														
+														placeholder='5-10 Years'
+													/>
+												</div>
 
-                   
+												<div class='form-group col-lg-12 col-md-12'>
+													<label>Location</label>
+													<input
+														{...register("location")}
+														type='text'
+													
+														placeholder='Certificate'
+													/>
+												</div>
 
-                     
-                      <div class="form-group col-lg-6 col-md-12">
-                        <label>Location</label>
-                        <input type="text" name="name" placeholder="Certificate"/>
-                      </div>
-                      <div class="form-group col-lg-6 col-md-12">
-                        <label>Location</label>
-                        <input type="text" name="name" placeholder="Certificate"/>
-                      </div>
-                   
-                 
+									
 
-                   
-                    
+												<div class='form-group col-lg-6 col-md-12'>
+													<button
+													type = "submit"
+														class='theme-btn btn-style-one'>
+														Submit
+													</button>
+												</div>
+											</div>
+										</form>
+										{loading ? <Loading loading={loading} /> : null}
+									</div>
+								</div>
+							</div>
 
-
-                     
-                      {/* <div class="form-group col-lg-6 col-md-12">
-                        <label>Allow In Search & Listing</label>
-                        <select class="chosen-select">
-                          <option>Yes</option>
-                          <option>No</option>
-                        </select>
-                      </div> */}
-
-                      {/* <div class="form-group col-lg-12 col-md-12">
-                        <label>Description</label>
-                        <textarea placeholder="Spent several years working on sheep on Wall Street. Had moderate success investing in Yugo's on Wall Street. Managed a small team buying and selling Pogo sticks for farmers. Spent several years licensing licorice in West Palm Beach, FL. Developed several new methods for working it banjos in the aftermarket. Spent a weekend importing banjos in West Palm Beach, FL.In this position, the Software Engineer collaborates with Evention's Development team to continuously enhance our current software solutions as well as create new solutions to eliminate the back-office operations and management challenges present"></textarea>
-                      </div> */}
-
-                   
-                      <div class="form-group col-lg-6 col-md-12">
-                        <button class="theme-btn btn-style-one">Save</button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-
-            
-            {/* <div class="ls-widget">
+							{/* <div class="ls-widget">
               <div class="tabs-box">
                 <div class="widget-title">
                   <h4>Social Network</h4>
@@ -237,15 +403,12 @@ const ApplyForm = () => {
                 </div>
               </div>
             </div> */}
-
-          </div>
-
-
-        </div>
-      </div>
-    </section>
-    </div>
-  )
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	);
 }
 
 export default ApplyForm
