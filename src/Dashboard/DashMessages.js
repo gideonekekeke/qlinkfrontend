@@ -10,14 +10,14 @@ import { allUsers } from "../Components/Global/actions";
 import { useThemeProps } from "@mui/material";
 import OtherUser from "./OtherUser";
 import moment from "moment";
+import { io } from "socket.io-client";
 const DashMessages = () => {
 	const { current } = useContext(GlobalContext);
 
-  const readData = useSelector((Action) => Action.dmyReducers.MainUser);
-  const readData2 = useSelector((Action) => Action.dmyReducers.otherUser);
+	const readData = useSelector((Action) => Action.dmyReducers.MainUser);
+	const readData2 = useSelector((Action) => Action.dmyReducers.otherUser);
 
-
-  console.log('reading', readData)
+	console.log("reading", readData);
 	const dispatch = useDispatch();
 	const [data, setData] = React.useState([]);
 	const [message, setMessage] = React.useState("");
@@ -25,11 +25,12 @@ const DashMessages = () => {
 	const myId = current?._id;
 	const [load, setLoad] = React.useState(true);
 	const [holdData, setHoldData] = React.useState();
-  const [dataFriend, setDataFriend] = React.useState([])
-  const [allFriend, setAllFriend] = React.useState([])
-  const [manyU, setManyU] = React.useState([])
-  const [ChatH, setChatH] = React.useState([])
+	const [dataFriend, setDataFriend] = React.useState([]);
+	const [allFriend, setAllFriend] = React.useState([]);
+	const [manyU, setManyU] = React.useState([]);
+	const [ChatH, setChatH] = React.useState([]);
 
+	const url = "https://qlinkappi.herokuapp.com/api/user/chat/user";
 	const fetchDetails = async () => {
 		await axios
 			.get(`https://qlinkappi.herokuapp.com/api/user/${myId}`)
@@ -53,75 +54,59 @@ const DashMessages = () => {
 		setLoad(false);
 	};
 
-  const pastData = {
+	const pastData = {
 		message: message,
 		sendTo: readData?.addedID,
 	};
-  const pastData2 = {
+	const pastData2 = {
 		message: message,
 		sendTo: readData2?._id,
 	};
 
 	const ChatMessage = async (e) => {
-    e.preventDefault()
+		e.preventDefault();
 		await axios
-			.post(
-				`https://qlinkappi.herokuapp.com/api/user/${readData._id}/chat`,
-				pastData,
-			)
+			.post(`https://qlinkappi.herokuapp.com/api/user/${readData._id}/chat`, pastData)
 
 			.then((response) => {
-        window.location.reload()
+				window.location.reload();
 				// console.log("get users now", response);
 			});
 	};
 	const ChatMessage2 = async (e) => {
-    e.preventDefault()
+		e.preventDefault();
 		await axios
-			.post(
-				`https://qlinkappi.herokuapp.com/api/user/${readData._id}/chat`,
-				pastData2,
-			)
+			.post(`https://qlinkappi.herokuapp.com/api/user/${readData._id}/chat`, pastData2)
 
 			.then((response) => {
-        window.location.reload()
+				window.location.reload();
 				// console.log("get users now", response);
 			});
 	};
 
-
 	const GettAllChat = async () => {
-   
 		await axios
-			.get(
-				`https://qlinkappi.herokuapp.com/api/user/chat/user`
-			)
+			.get(url)
 
 			.then((response) => {
-       
 				console.log("geting all messages", response);
-        setChatH(response?.data)
-       
-			
+				setChatH(response?.data);
 			});
 	};
 	const getFriends = async () => {
-   if(readData) {
-     
-		await axios
-			.get(
-				`https://qlinkappi.herokuapp.com/api/user/${readData._id}/friend/friends`,
-			)
+		if (readData) {
+			await axios
+				.get(`https://qlinkappi.herokuapp.com/${readData._id}`)
 
-			.then((response) => {
-				// console.log("AM GETTING FRIENDSr", response);
+				.then((response) => {
+					// console.log("AM GETTING FRIENDSr", response);
 
-			 setDataFriend(response?.data?.data?.conversation);
-			});
-		setLoad(false);
-   }else {
-     console.log('still loading')
-   }
+					setDataFriend(response?.data?.data?.conversation);
+				});
+			setLoad(false);
+		} else {
+			console.log("still loading");
+		}
 	};
 
 	const toggleShow = () => {
@@ -129,7 +114,7 @@ const DashMessages = () => {
 	};
 	const getAllFriends = async () => {
 		await axios
-			.get(`https://qlinkappi.herokuapp.com/api/user/chat/friend`)
+			.get(`https://qlinkappi.herokuapp.com`)
 
 			.then((response) => {
 				// console.log("this are the friends oooo", response?.data);
@@ -137,11 +122,13 @@ const DashMessages = () => {
 				setAllFriend(response?.data);
 			});
 		setLoad(false);
- 
 	};
 
-
-
+	// const socket = io(`https://qlinkappi.herokuapp.com/${readData._id}`);
+	// socket.connect("observer", (data) => {
+	// 	console.log("thia ia rhwebjdn", data);
+	// 	// setChatH([...ChatH, data]);
+	// });
 
 	React.useEffect(() => {
 		fetchDetails();
@@ -149,10 +136,10 @@ const DashMessages = () => {
 		const LocalData = JSON.parse(window.localStorage.getItem("deta"));
 		console.log(LocalData?.userName);
 		setHoldData(LocalData);
-    getFriends()
-fetchAllUsers()
-    getAllFriends()
-       GettAllChat()
+		getFriends();
+		fetchAllUsers();
+		getAllFriends();
+		GettAllChat();
 	}, [myId, readData]);
 
 	return (
@@ -322,12 +309,11 @@ fetchAllUsers()
 																					class='rounded-circle user_img_msg'
 																				/>
 																				<div class='name'>
-																				  {
-                                            data?.isDeveloper ? 
-                                            <>
-                                             	{readData2?.name}
-                                            </> : <>{readData?.userName}</>	
-                                          }
+																					{data?.isDeveloper ? (
+																						<>{readData2?.name}</>
+																					) : (
+																						<>{readData?.userName}</>
+																					)}
 																					<span class='msg_time'>
 																						{" "}
 																						{moment(props?.createdAt).fromNow()}

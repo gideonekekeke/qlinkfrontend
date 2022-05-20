@@ -38,7 +38,7 @@ const App = () => {
 				<Routes>
 					<Route path='/' element={<HomeScreen />} />
 					<Route path='/findjob' element={<JobListing />} />
-					<Route path='/findjobDetail' element={<JobDetails />} />
+					<Route path='/:id/findjobDetail' element={<JobDetails />} />
 					<Route path='/:id/profile' element={<UserProfile />} />
 					<Route path='/Developers' element={<Developers />} />
 					<Route

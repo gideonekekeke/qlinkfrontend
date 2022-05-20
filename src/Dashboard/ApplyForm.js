@@ -74,20 +74,22 @@ setImage(file);
 
 				await axios
 					.post(
-						`https://qlinkappi.herokuapp.com/api/jobs/${useID}/apply`,
+						`https://qlinkappi.herokuapp.com/api/jobs/${id}/apply`,
 						formdata,
 						config,
 					)
 					.then((response) => {
-						if (response === 201) {
+						
 							swal({
-								title: "uploaded successful!",
-								text: "You can clicked the button!",
+								title: "Applied successfully!",
+								text: "You have successfully applied for this job",
 								icon: "success",
 								button: "ok",
-							});
+							}).then(()=>{
+								window.location.reload()
+							})
 							setLoading(false);
-						}
+				
 					})
 					.catch((error) => {
 						swal({
@@ -177,7 +179,7 @@ const uploadForm = async()=>{
 										<div class='uploading-outer'>
 											<div class='uploadButton'>
 												<input
-													// onChange={onPreview}
+													onChange={onPreview}
 													class='uploadButton-input'
 													type='file'
 													id='upload'
@@ -201,21 +203,16 @@ const uploadForm = async()=>{
 										<form
 											onSubmit={(e) => {
 												e.preventDefault();
-                                                     submit()
-												toggleLoad();
+
+												
 											}}
 											class='default-form'>
-											<input
-												onChange={onPreview}
-												type='file'
-											/>
 											<div class='row'>
 												<div class='form-group col-lg-6 col-md-12'>
 													<label>Full Name</label>
 													<input
 														{...register("name")}
 														type='text'
-													
 														placeholder='Jerome'
 													/>
 												</div>
@@ -225,7 +222,6 @@ const uploadForm = async()=>{
 													<input
 														{...register("email")}
 														type='text'
-													
 														placeholder='email@gmail.com'
 													/>
 												</div>
@@ -235,7 +231,6 @@ const uploadForm = async()=>{
 													<input
 														{...register("phoneNumber")}
 														type='text'
-													
 														placeholder='0 123 456 7890'
 													/>
 												</div>
@@ -250,7 +245,6 @@ const uploadForm = async()=>{
 													<input
 														{...register("experience")}
 														type='text'
-														
 														placeholder='5-10 Years'
 													/>
 												</div>
@@ -260,16 +254,16 @@ const uploadForm = async()=>{
 													<input
 														{...register("location")}
 														type='text'
-													
 														placeholder='Certificate'
 													/>
 												</div>
 
-									
-
 												<div class='form-group col-lg-6 col-md-12'>
 													<button
-													type = "submit"
+														onClick={()=>{
+															toggleLoad();
+															submit()
+														}}
 														class='theme-btn btn-style-one'>
 														Submit
 													</button>

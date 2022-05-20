@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom'
 import DashHeader from './DashHeader'
 import moment from 'moment'
 const ShortListJobs = () => {
-
-
     const [data, setData] = React.useState([]);
 
 			const getUser = async () => {
@@ -16,8 +14,6 @@ const ShortListJobs = () => {
 						setData(response?.data);
 					});
 			};
-
-
       React.useEffect(()=>{
 getUser()
       },[])

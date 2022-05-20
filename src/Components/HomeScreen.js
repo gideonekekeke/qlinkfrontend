@@ -9,13 +9,13 @@ import Header from './Header'
 import Footer from './Footer'
 import { useSelector } from 'react-redux'
 import axios from 'axios'
-
+import ClipLoader from "react-spinners/ClipLoader";
 const HomeScreen = () => {
 
       const [data, setData] = React.useState([]);
 		  const [dataV, setDataV] = React.useState([]);
 
-
+const [load, setLoad] = React.useState(true);
 			const getUser = async () => {
 				const res = await axios
 					.get(`https://newqlinksbackapi.vercel.app/api/user`)
@@ -23,6 +23,7 @@ const HomeScreen = () => {
 						console.log("my wounsdfh", response);
 						setData(response?.data?.data);
 					});
+              setLoad(false);
 			};
 
       
@@ -33,6 +34,7 @@ const HomeScreen = () => {
 							console.log("my main now", response);
 							setDataV(response?.data);
 						});
+            setLoad(false)
 				};
 
 			
@@ -167,6 +169,12 @@ const HomeScreen = () => {
 						<div className='tabs-content pt-50 wow fadeInUp'>
 							<div className='tab active-tab' id='tab2'>
 								<div className='row'>
+									{load ? (
+										<div style = {{display : 'flex', justifyContent : 'center', alignItems : 'center'}} >
+											{" "}
+											<ClipLoader size={30} />
+										</div>
+									) : null}
 									{dataV?.map((props) => (
 										<div className='job-block col-lg-4 col-md-6 col-sm-12'>
 											<div className='inner-box'>
@@ -179,7 +187,9 @@ const HomeScreen = () => {
 														/>
 													</span>
 													<h4>
-														<a href='/findjobDetail'>{props?.jobTitle}</a>
+														<a href={`/${props?._id}/findjobDetail`}>
+															{props?.jobTitle}
+														</a>
 													</h4>
 													<ul className='job-info'>
 														<li>
@@ -247,6 +257,12 @@ const HomeScreen = () => {
 					</div>
 
 					<div class='carousel-outer wow fadeInUp'>
+          		{load ? (
+										<div style = {{display : 'flex', justifyContent : 'center', alignItems : 'center'}} >
+											{" "}
+											<ClipLoader size={30} />
+										</div>
+									) : null}
 						<div
 							style={{
 								display: "flex",
@@ -254,6 +270,7 @@ const HomeScreen = () => {
 								justifyContent: "center",
 							}}
 							class=''>
+              
 							{data?.map((props) => (
 								<>
 									{props?.isDeveloper ? (

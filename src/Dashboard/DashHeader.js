@@ -40,7 +40,7 @@ getUser()
 						<div class='nav-outer'>
 							<div class='logo-box'>
 								<div class='logo'>
-									<a href='index.html'>
+									<a href='/'>
 										<img
 											src='images/qlinklogo.png'
 											style={{ width: "100px" }}
@@ -150,7 +150,7 @@ getUser()
 
 				<div class='mobile-header'>
 					<div class='logo'>
-						<a href='index.html'>
+						<a href='/'>
 							<img
 								src='images/qlinklogo.png'
 								style={{ width: "100px", objectFit: "contain" }}
