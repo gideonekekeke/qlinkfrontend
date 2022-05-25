@@ -6,7 +6,6 @@ const HomeDash = () => {
     const {current} = useContext(GlobalContext)
  
     const myId = current?._id
-
     console.log("weh", current)
 
      const [load, setLoad] = React.useState(true);
@@ -15,16 +14,16 @@ const HomeDash = () => {
 
 			const getUser = async () => {
 				const res = await axios
-					.get(`https://newqlinksbackapi.vercel.app/api/user/${myId}`)
+					.get(`https://qlinkappi.herokuapp.com/api/user/${myId}`)
 					.then((response) => {
 						console.log("my wounsdfh", response);
 						setData(response?.data?.data);
-						setLoad(false)
+						setLoad(false);
 					});
 			};
 			const getUserJob = async () => {
 				const res = await axios
-					.get("https://newqlinksbackapi.vercel.app/api/jobs/alljobs")
+					.get("https://qlinkappi.herokuapp.com/api/jobs/alljobs")
 					.then((response) => {
 						console.log("myhdfhjdfjf jobs", response);
 						setMani(response?.data);

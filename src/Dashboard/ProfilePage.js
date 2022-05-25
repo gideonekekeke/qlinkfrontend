@@ -33,36 +33,41 @@ const myId = current?._id
 
   const postData = async()=>{
 
-       await axios.patch(`https://newqlinksbackapi.vercel.app/api/user/editprofile/${myId}`, {name,jobTitle, 
-      email,
-      salary,
-      age,
-      experience,
-      websiteUrl,
-      description,
-      gender,
-      location,
-      phoneNumber,
-
-      }).then((response)=>{
-
-        // console.log("update",response?.data.data)
-        // edit profile from localstorage
-   const profile = JSON.parse(localStorage.getItem('dataUsers'));
-    Object.keys(response?.data?.data).forEach((key) => {
-        profile[key] = response?.data?.data[key];
-    });
-    localStorage.setItem('dataUsers', JSON.stringify(profile));
-               swal({
-            title: " Successfull",
-            text: "Your Profile Has been Updated!",
-            icon: "success",
-            button: "ok",
-          }).then((value) => {
-            swal(window.location.reload());
-          }); 
-               setLoading(false)
-        })
+       await axios
+					.patch(
+						`https://qlinkappi.herokuapp.com/api/user/editprofile/${myId}`,
+						{
+							name,
+							jobTitle,
+							email,
+							salary,
+							age,
+							experience,
+							websiteUrl,
+							description,
+							gender,
+							location,
+							phoneNumber,
+						},
+					)
+					.then((response) => {
+						// console.log("update",response?.data.data)
+						// edit profile from localstorage
+						// const profile = JSON.parse(localStorage.getItem("dataUsers"));
+						// Object.keys(response?.data?.data).forEach((key) => {
+						// 	profile[key] = response?.data?.data[key];
+						// });
+						// localStorage.setItem("dataUsers", JSON.stringify(profile));
+						swal({
+							title: " Successfull",
+							text: "Your Profile Has been Updated!",
+							icon: "success",
+							button: "ok",
+						}).then((value) => {
+							swal(window.location.reload());
+						});
+						setLoading(false);
+					});
        
    
     
@@ -74,7 +79,7 @@ const myId = current?._id
 
 			const getUser = async () => {
 				const res = await axios
-					.get(`https://newqlinksbackapi.vercel.app/api/user/${myId}`)
+					.get(`https://qlinkappi.herokuapp.com/api/user/${myId}`)
 					.then((response) => {
 						console.log("hdjfkkdeuhjfjjf", response?.data?.data);
 						setData(response?.data?.data);
@@ -116,6 +121,8 @@ const myId = current?._id
 					 formdata,config
 					)
 					.then((response) => {
+							setLoading(false);
+						window.location.reload()
 						// console.log("update",response?.data.data)
 						// edit profile from localstorage
 						const profile = JSON.parse(localStorage.getItem("dataUsers"));
@@ -131,7 +138,7 @@ const myId = current?._id
 						}).then((value) => {
 							swal(window.location.reload());
 						});
-						setLoading(false);
+					
 					});
 }
 
@@ -159,7 +166,8 @@ const myId = current?._id
 
 									<div class='widget-content'>
 										<form
-										method="POST" enctype = "multipart/form-data"
+											method='POST'
+											enctype='multipart/form-data'
 											onSubmit={(e) => {
 												e.preventDefault();
 												ChangeImageProfile();
@@ -174,19 +182,56 @@ const myId = current?._id
 														id='upload'
 														onChange={imageOnchange}
 													/>
-													<label
-														class='uploadButton-button ripple-effect'
-														for='upload'>
-														Browse Pic
-													</label>
 													{avatar ? (
-														<div style={{ marginTop: "10px" }} class=''>
-															<button
-																type='submit'
-																class='theme-btn btn-style-one'>
-																Save and Upload Image
-															</button>
+														<div
+															style={{
+																height: "140px",
+																width: "200px",
+																background: "silver",
+															}}>
+															<img
+																style={{
+																	height: "100%",
+																	width: "100%",
+																	objectFit: "cover",
+																}}
+																src={prevUrl}
+															/>
 														</div>
+													) : (
+														<label
+															class='uploadButton-button ripple-effect'
+															for='upload'>
+															Browse Pic
+														</label>
+													)}
+
+													{avatar ? (
+														<>
+															<div style={{ marginTop: "10px" }} class=''>
+																<button
+																	onClick={() => {
+																		setAvatar(null);
+																	
+																	}}
+																	style={{ background: "red" }}
+																	type='submit'
+																	class='theme-btn btn-style-one'>
+																	Remove Image
+																</button>
+															</div>
+															<div style={{ marginTop: "10px" }} class=''>
+																<button
+																	onClick={() => {
+																	
+																		toggleLoad();
+																	}}
+																	type='submit'
+																	class='theme-btn btn-style-one'>
+																	Save and Upload Image
+																</button>
+															</div>
+														</>
 													) : (
 														<div style={{ marginTop: "10px" }} class=''>
 															<button
@@ -208,6 +253,7 @@ const myId = current?._id
 													</div>
 												)}
 											</div>
+											{Loading ? <Loading loading={loading} /> : null}
 										</form>
 
 										<form
@@ -362,6 +408,7 @@ const myId = current?._id
 														onChange={(e) => {
 															setDescription(e.target.value);
 														}}
+														defaultValue={data?.description}
 														placeholder="Spent several years working on sheep on Wall Street. Had moderate success investing in Yugo's on Wall Street. Managed a small team buying and selling Pogo sticks for farmers. Spent several years licensing licorice in West Palm Beach, FL. Developed several new methods for working it banjos in the aftermarket. Spent a weekend importing banjos in West Palm Beach, FL.In this position, the Software Engineer collaborates with Evention's Development team to continuously enhance our current software solutions as well as create new solutions to eliminate the back-office operations and management challenges present"></textarea>
 												</div>
 

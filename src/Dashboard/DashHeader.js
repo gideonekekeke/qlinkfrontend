@@ -1,12 +1,20 @@
 import axios from 'axios'
 import React, { useContext } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { GlobalContext } from '../Components/Global/GlobalContext'
+import DashSideBar from './DashSideBar'
+import {ImCancelCircle} from 'react-icons/im'
+import { signOut } from '../Components/Global/actions'
 
 const DashHeader = () => {
-
+	const dispatch = useDispatch()
+const [show, setShow] = React.useState(false)
  
+
+const toggleShow = ()=>{
+	setShow(!show)
+}
      const {current} = useContext(GlobalContext)
      const hist = useNavigate()
 console.log('main', current)
@@ -18,11 +26,10 @@ const myId = current?._id
 
  const getUser = async () => {
 		const res = await axios
-			.get(`https://newqlinksbackapi.vercel.app/api/user/${myId}`)
+			.get(`https://qlinkappi.herokuapp.com/api/user/${myId}`)
 			.then((response) => {
 				console.log("my wounsdfh", response);
 				setData(response?.data?.data);
-			
 			});
  };
 
@@ -75,7 +82,7 @@ getUser()
 									/>
 									<span class='name'>My Account</span>
 								</a>
-								<ul class='dropdown-menu'>
+							<ul class='dropdown-menu'>
 									<li class='active'>
 										<a href='candidate-dashboard.html'>
 											{" "}
@@ -142,11 +149,15 @@ getUser()
 											<i class='la la-trash'></i>Delete Profile
 										</a>
 									</li>
-								</ul>
+								</ul> 
 							</div>
 						</div>
 					</div>
 				</div>
+
+				{
+					show ? <DashSideBar/> :null
+				} 
 
 				<div class='mobile-header'>
 					<div class='logo'>
@@ -163,9 +174,9 @@ getUser()
 					<div class='nav-outer clearfix'>
 						<div class='outer-box'>
 							<div class='login-box'>
-								<a href='login-popup.html' class='call-modal'>
-									<span class='icon-user'></span>
-								</a>
+							   {show ? 	<a  class='call-modal'>
+									<span class=''><ImCancelCircle onClick = {toggleShow}/></span>
+								</a> : null}
 							</div>
 
 							<button id='toggle-user-sidebar'>
@@ -176,7 +187,10 @@ getUser()
 									class='thumb'
 								/>
 							</button>
-							<a href='#nav-mobile' class='mobile-nav-toggler navbar-trigger'>
+							<a onClick = {()=>{
+								console.log('onClick')
+								toggleShow()
+							}} class='mobile-nav-toggler navbar-trigger'>
 								<span class='flaticon-menu-1'></span>
 							</a>
 						</div>
@@ -238,10 +252,11 @@ getUser()
 						{/* <li><a href="dashboard-profile"><i class="la la-user-alt"></i>View Profile</a></li> */}
 						<li
 							onClick={() => {
-								window.localStorage.removeItem("dataUsers");
-								hist(window.location.reload("/"));
+								// window.localStorage.removeItem("dataUsers");
+								dispatch(signOut())
+						
 							}}>
-							<a href='/'>
+							<a href='/' >
 								<i class='la la-sign-out'></i>Logout
 							</a>
 						</li>

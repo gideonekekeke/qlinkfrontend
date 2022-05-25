@@ -307,56 +307,30 @@ console.log("am trying to get nw", data)
 												<li>
 													<i class='icon icon-calendar'></i>
 													<h5>Date Posted:</h5>
-													<span>Posted 1 hours ago</span>
+													<span>{moment(data?.createdAt).fromNow()}</span>
 												</li>
-												<li>
-													<i class='icon icon-expiry'></i>
-													<h5>Expiration date:</h5>
-													<span>April 06, 2021</span>
-												</li>
+											
 												<li>
 													<i class='icon icon-location'></i>
 													<h5>Location:</h5>
-													<span>London, UK</span>
+													<span>{data?.location}</span>
 												</li>
 												<li>
 													<i class='icon icon-user-2'></i>
 													<h5>Job Title:</h5>
-													<span>Designer</span>
+													<span>{data?.jobTitle}</span>
 												</li>
-												<li>
-													<i class='icon icon-clock'></i>
-													<h5>Hours:</h5>
-													<span>50h / week</span>
-												</li>
-												<li>
-													<i class='icon icon-rate'></i>
-													<h5>Rate:</h5>
-													<span>$15 - $25 / hour</span>
-												</li>
+											
+											
 												<li>
 													<i class='icon icon-salary'></i>
-													<h5>Salary:</h5>
-													<span>$35k - $45k</span>
+													<h5>Budget</h5>
+													<span>{data?.budget}</span>
 												</li>
 											</ul>
 										</div>
 
-										<h4 class='widget-title'>Job Location</h4>
-										<div class='widget-content'>
-											<div class='map-outer'>
-												<div
-													class='map-canvas'
-													data-zoom='12'
-													data-lat='-37.817085'
-													data-lng='144.955631'
-													data-type='roadmap'
-													data-hue='#ffc400'
-													data-title='Envato'
-													data-icon-path='images/resource/map-marker.png'
-													data-content="Melbourne VIC 3000, Australia<br><a href='mailto:info@youremail.com'>info@youremail.com</a>"></div>
-											</div>
-										</div>
+									
 
 										<h4 class='widget-title'>Job Skills</h4>
 										<div class='widget-content'>
@@ -383,62 +357,7 @@ console.log("am trying to get nw", data)
 										</div>
 									</div>
 
-									<div class='sidebar-widget company-widget'>
-										<div class='widget-content'>
-											<div class='company-title'>
-												<div class='company-logo'>
-													<img src='images/resource/company-7.png' alt='' />
-												</div>
-												<h5 class='company-name'>InVision</h5>
-												<a href='#' class='profile-link'>
-													View company profile
-												</a>
-											</div>
-											<ul class='company-info'>
-												<li>
-													Primary industry: <span>Software</span>
-												</li>
-												<li>
-													Company size: <span>501-1,000</span>
-												</li>
-												<li>
-													Founded in: <span>2011</span>
-												</li>
-												<li>
-													Phone: <span>123 456 7890</span>
-												</li>
-												<li>
-													Email: <span>info@joio.com</span>
-												</li>
-												<li>
-													Location: <span>London, UK</span>
-												</li>
-												<li>
-													Social media:
-													<div class='social-links'>
-														<a href='#'>
-															<i class='fab fa-facebook-f'></i>
-														</a>
-														<a href='#'>
-															<i class='fab fa-twitter'></i>
-														</a>
-														<a href='#'>
-															<i class='fab fa-instagram'></i>
-														</a>
-														<a href='#'>
-															<i class='fab fa-linkedin-in'></i>
-														</a>
-													</div>
-												</li>
-											</ul>
-
-											<div class='btn-box'>
-												<a href='#' class='theme-btn btn-style-three'>
-													www.invisionapp.com
-												</a>
-											</div>
-										</div>
-									</div>
+								
 								</aside>
 							</div>
 						</div>

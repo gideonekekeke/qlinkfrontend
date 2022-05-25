@@ -6,12 +6,13 @@ import swal from "sweetalert";
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../Global/GlobalContext";
 
-import { getUser } from "../Global/actions";
+import { getUser, user } from "../Global/actions";
+import { useDispatch } from "react-redux";
 // import 'sweetalert2/src/sweetalert2.scss'
 const Register = () => {
-
 	const { handleShow } = useContext(GlobalContext);
 	const hist = useNavigate();
+	const dispatch = useDispatch();
 	const [name, setName] = React.useState("");
 	const [fName, setFName] = React.useState("jimoh");
 	const [lName, setLName] = React.useState("samsondhdh");
@@ -41,28 +42,23 @@ const Register = () => {
 			});
 		} else {
 			await axios
-				.post("https://newqlinksbackapi.vercel.app/api/user/clientReg ", {
+				.post("https://qlinkappi.herokuapp.com/api/user/clientReg/reg ", {
 					name,
 					email,
 					password,
 				})
 				.then((response) => {
-					hist("/dashboard");
-					 window.location.reload()
-			
 					swal({
 						title: " Success",
-						text: "An email has been sent to your email address to confirm your account",
+						text: "A message has been sent to your email address to confirm your account",
 						icon: "success",
-						button: "ok",
-					}).then((value) => {
-						swal(hist("/dashboard"));
 					});
-					window.localStorage.setItem(
-						"dataUsers",
-						JSON.stringify(response?.data?.data?.CreateUser),
-					);
-					
+					// window.localStorage.setItem(
+					// 	"dataUsers",
+					// 	JSON.stringify(response?.data?.data?.CreateUser),
+
+					dispatch(user(response?.data?.data?.CreateUser));
+					// );
 
 					//  console.log(response.data.data.CreateUser)
 					handleShow();
@@ -80,6 +76,53 @@ const Register = () => {
 				});
 		}
 	};
+	const SignupDeveloper = async () => {
+		if (name === "" && email === "" && password === "") {
+			Swal.fire({
+				icon: "error",
+				title: "Empty Fields",
+				text: "All fields are Compulsory!",
+				//   footer: '<a href="">Why do I have this issue?</a>'
+			});
+		} else {
+			await axios
+				.post("https://qlinkappi.herokuapp.com/api/user/developerReg ", {
+					name,
+					email,
+					password,
+				})
+				.then((response) => {
+					swal({
+						title: " Success",
+						text: "A message has been sent to your email address to confirm your account",
+						icon: "success",
+					});
+					// window.localStorage.setItem(
+					// 	"dataUsers",
+					// 	JSON.stringify(response?.data?.data?.CreateUser),
+
+					dispatch(user(response?.data?.data?.CreateUser));
+					// );
+
+					//  console.log(response.data.data.CreateUser)
+					handleShow();
+					setLoading(false);
+				})
+				.catch((error) => {
+					if (error.response.status === 401 || 400) {
+						swal({
+							title: error.response.data.msg,
+							text: "",
+							icon: "error",
+							button: "ok",
+						}).then((value) => {
+							setLoading(false)
+							// swal(hist(window.location.reload()));
+						});
+					}
+				});
+		}
+	};
 
 	const LoginData = async () => {
 		if (email === "" && password === "") {
@@ -91,20 +134,21 @@ const Register = () => {
 			});
 		} else {
 			await axios
-				.post("https://newqlinksbackapi.vercel.app/api/user/login", {
+				.post("https://qlinkappi.herokuapp.com/api/user/login", {
 					email,
 					password,
 				})
 				.then((response) => {
-					window.localStorage.setItem(
-						"dataUsers",
-						JSON.stringify(response.data.data),
-					);
-					hist("/dashboard");
-					window.location.reload();
+					// window.localStorage.setItem(
+					// 	"dataUsers",
+					// 	JSON.stringify(response.data.data),
+					// );
+					dispatch(user(response.data.data));
+					window.location.reload(hist("/dashboard"));
+					console.log("seee oooo", response);
 					swal({
 						title: " Success",
-						text: "Click ok to redirect you to your Dashboard",
+						text: response.data.message,
 						icon: "success",
 						button: "ok",
 					}).then((value) => {
@@ -121,7 +165,7 @@ const Register = () => {
 							icon: "error",
 							button: "ok",
 						}).then((value) => {
-							swal(hist(window.location.reload()));
+							// swal(hist(window.location.reload()));
 						});
 					}
 				});
@@ -132,80 +176,80 @@ const Register = () => {
 
 	let inputRef = "R905743646474";
 
-	const SignupDeveloper = async () => {
-		if (name === "" && email === "" && password === "") {
-			Swal.fire({
-				icon: "error",
-				title: "Empty Fields",
-				text: "All fields are Compulsory!",
-				//   footer: '<a href="">Why do I have this issue?</a>'
-			});
-		} else {
-			Swal.fire({
-				title: "Submit your Qubators Reference Code",
-				input: "text",
-				inputAttributes: {
-					autocapitalize: "off",
-				},
-				showCancelButton: true,
-				confirmButtonText: "Submit",
-				showLoaderOnConfirm: true,
-				inputValidator: (value) => {
-					if (value === inputRef) {
-						return axios
-							.post(
-								"https://newqlinksbackapi.vercel.app/api/user/developerReg",
-								{ name, email, password },
-							)
-							.then((response) => {
-								window.localStorage.setItem(
-									"dataUsers",
-									JSON.stringify(response.data.data?.CreateUser),
-								);
-								hist("/mainprofile");
-								window.location.reload();
-								swal({
-									title: " Successful",
-									text: "click ok to redirect you to your dashboard",
-									icon: "success",
-									button: "ok",
-								}).then((value) => {
-									window.location.reload();
-									swal(hist("/mainprofile"));
-									window.localStorage.setItem(
-										"dataUsers",
-										JSON.stringify(response?.data?.data?.CreateUser),
-									);
-								});
-								handleShow();
-								setLoading(false);
-								// window.location.reload("/mainprofile")
+	// const SignupDeveloper = async () => {
+	// 	if (name === "" && email === "" && password === "") {
+	// 		Swal.fire({
+	// 			icon: "error",
+	// 			title: "Empty Fields",
+	// 			text: "All fields are Compulsory!",
+	// 			//   footer: '<a href="">Why do I have this issue?</a>'
+	// 		});
+	// 	} else {
+	// 		Swal.fire({
+	// 			title: "Submit your Qubators Reference Code",
+	// 			input: "text",
+	// 			inputAttributes: {
+	// 				autocapitalize: "off",
+	// 			},
+	// 			showCancelButton: true,
+	// 			confirmButtonText: "Submit",
+	// 			showLoaderOnConfirm: true,
+	// 			inputValidator: (value) => {
+	// 				if (value === inputRef) {
+	// 					return axios
+	// 						.post(
+	// 							"https://newqlinksbackapi.vercel.app/api/user/developerReg",
+	// 							{ name, email, password },
+	// 						)
+	// 						.then((response) => {
+	// 							window.localStorage.setItem(
+	// 								"dataUsers",
+	// 								JSON.stringify(response.data.data?.CreateUser),
+	// 							);
+	// 							hist("/mainprofile");
+	// 							window.location.reload();
+	// 							swal({
+	// 								title: " Successful",
+	// 								text: "click ok to redirect you to your dashboard",
+	// 								icon: "success",
+	// 								button: "ok",
+	// 							}).then((value) => {
+	// 								window.location.reload();
+	// 								swal(hist("/mainprofile"));
+	// 								window.localStorage.setItem(
+	// 									"dataUsers",
+	// 									JSON.stringify(response?.data?.data?.CreateUser),
+	// 								);
+	// 							});
+	// 							handleShow();
+	// 							setLoading(false);
+	// 							// window.location.reload("/mainprofile")
 
-								window.localStorage.setItem(
-									"dataUsers",
-									JSON.stringify(response?.data?.data?.CreateUser),
-								);
-								hist("/mainprofile");
-							})
-							.catch((error) => {
-								Swal.showValidationMessage(`Request failed: ${error}`);
-							});
-					} else if (value !== inputRef) {
-						Swal.fire({
-							icon: "error",
-							title: "Refrence Code error",
-							text: "",
-							//   footer: '<a href="">Why do I have this issue?</a>'
-						}).then((value) => {
-							swal(setLoading(false));
-						});
-					}
-				},
+	// 							window.localStorage.setItem(
+	// 								"dataUsers",
+	// 								JSON.stringify(response?.data?.data?.CreateUser),
+	// 							);
+	// 							hist("/mainprofile");
+	// 						})
+	// 						.catch((error) => {
+	// 							Swal.showValidationMessage(`Request failed: ${error}`);
+	// 						});
+	// 				} else if (value !== inputRef) {
+	// 					Swal.fire({
+	// 						icon: "error",
+	// 						title: "Refrence Code error",
+	// 						text: "",
+	// 						//   footer: '<a href="">Why do I have this issue?</a>'
+	// 					}).then((value) => {
+	// 						swal(setLoading(false));
+	// 					});
+	// 				}
+	// 			},
 
-				allowOutsideClick: () => !Swal.isLoading(),
-			});
-		}
-	};
+	// 			allowOutsideClick: () => !Swal.isLoading(),
+	// 		});
+	// 	}
+	// };
 
 	return (
 		<div
@@ -214,7 +258,7 @@ const Register = () => {
 				justifyContent: "center",
 				alignItems: "center",
 				background: "rgba(0,0,0, 0.5)",
-				minHeight: "90vh",
+				minHeight: "100%",
 				position: "fixed",
 				width: "100vw",
 			}}

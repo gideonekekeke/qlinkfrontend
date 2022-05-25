@@ -92,5 +92,5 @@ const SubMenu = styled.div`
 	z-index: 1000;
     transition : all 350ms;
 
-	}
+	
 `;

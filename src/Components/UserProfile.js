@@ -7,6 +7,7 @@ import moment from "moment";
 import { GlobalContext } from "./Global/GlobalContext";
 import swal from "sweetalert";
 import Loading from "./LoadState";
+import PrivateRoute from "../Components/Global/PrivateRoute";
 
 const UserProfile = () => {
 	const hist = useNavigate();
@@ -14,8 +15,8 @@ const UserProfile = () => {
 	const [data, setData] = React.useState([]);
 	const [message, setMessage] = React.useState("");
 	const [loading, setLoading] = React.useState(false);
-	const [allFriend, setAllFriend] = React.useState([])
-	const [manyU, setManyU] = React.useState([])
+	const [allFriend, setAllFriend] = React.useState([]);
+	const [manyU, setManyU] = React.useState([]);
 	const myId = current?._id;
 
 	const { id } = useParams();
@@ -42,46 +43,54 @@ const UserProfile = () => {
 
 	const AddingFriend = async () => {
 		await axios
-			.post(
-				`https://qlinkappi.herokuapp.com/api/user/${myId}/friend`,
-				captureDetails,
-			)
+			.post(`https://qlinkappi.herokuapp.com/${myId}/friend`, captureDetails)
 			.then((response) => {
 				hist("/messages");
 				window.location.reload();
 				setLoading(false);
+			}).catch((error) => {
+				if (error.response.status === 400) {
+					swal({
+							title: "cannot procceed , please Register or login your account",
+							text: "",
+							icon: "error",
+							button: "ok",
+						}).then((value) => {
+						hist("/register")
+						});
+
+					}
+			})
+
+		
+	};
+
+	const getAllFriends = async () => {
+		await axios
+			.get(`https://qlinkappi.herokuapp.com`)
+
+			.then((response) => {
+				console.log("this are the friendsztgc oooo", response?.data);
+
+				setAllFriend(response?.data);
 			});
 	};
 
+	const fetchAllUsers = async () => {
+		await axios
+			.get(`https://qlinkappi.herokuapp.com/api/user`)
 
-		const getAllFriends = async () => {
-			await axios
-				.get(`https://qlinkappi.herokuapp.com/api/user/chat/friend`)
+			.then((response) => {
+				// console.log("get the many", response);
 
-				.then((response) => {
-					// console.log("this are the friends oooo", response?.data);
-
-					setAllFriend(response?.data);
-				});
-		
-		};
-
-			const fetchAllUsers = async () => {
-				await axios
-					.get(`https://qlinkappi.herokuapp.com/api/user`)
-
-					.then((response) => {
-						// console.log("get the many", response);
-
-						setManyU(response?.data?.data);
-					});
-			
-			};
+				setManyU(response?.data?.data);
+			});
+	};
 
 	React.useEffect(() => {
 		fetchDetails();
-		getAllFriends()
-		fetchAllUsers()
+		getAllFriends();
+		fetchAllUsers();
 	}, [data]);
 
 	return (
@@ -189,20 +198,20 @@ const UserProfile = () => {
 													<div className='default-form'>
 														{allFriend.find(
 															(el) =>
-																el?.userFriend === current?._id && el?.addedID === id )
-														? (
-															<form
-															>
+																el?.userFriend === current?._id &&
+																el?.addedID === id,
+														) ? (
+															<form>
 																<div className='row clearfix'>
 																	<div className='col-lg-12 col-md-12 col-sm-12 form-group'>
-																	<Link to ="/messages">
-                                                                      	<button
-																			className='theme-btn btn-style-one'
-																			type='submit'
-																			name='submit-form'>
-																			Continue Conversation
-																		</button>
-																	</Link>
+																		<Link to='/messages'>
+																			<button
+																				className='theme-btn btn-style-one'
+																				type='submit'
+																				name='submit-form'>
+																				Continue Conversation
+																			</button>
+																		</Link>
 																	</div>
 																</div>
 															</form>
@@ -215,12 +224,14 @@ const UserProfile = () => {
 																}}>
 																<div className='row clearfix'>
 																	<div className='col-lg-12 col-md-12 col-sm-12 form-group'>
-																		<button
+																	 
+																	  	<button
 																			className='theme-btn btn-style-one'
 																			type='submit'
 																			name='submit-form'>
 																			Start Conversation
 																		</button>
+																	 
 																	</div>
 																</div>
 															</form>
@@ -239,6 +250,145 @@ const UserProfile = () => {
 					</div>
 				</div>
 			</section>
+			<div className='sidebar-column col-lg-4 col-md-12 col-sm-12'>
+				<aside className='sidebar'>
+					<div className='sidebar-widget'>
+						<div className='widget-content'>
+							<ul className='job-overview'>
+								<li>
+									<i className='icon icon-calendar'></i>
+									<h5>Experience:</h5>
+									<span>0-2 Years</span>
+								</li>
+
+								<li>
+									<i className='icon icon-expiry'></i>
+									<h5>Age:</h5>
+									<span>28-33 Years</span>
+								</li>
+
+								<li>
+									<i className='icon icon-rate'></i>
+									<h5>Current Salary:</h5>
+									<span>11K - 15K</span>
+								</li>
+
+								<li>
+									<i className='icon icon-salary'></i>
+									<h5>Expected Salary:</h5>
+									<span>26K - 30K</span>
+								</li>
+
+								<li>
+									<i className='icon icon-user-2'></i>
+									<h5>Gender:</h5>
+									<span>Female</span>
+								</li>
+
+								<li>
+									<i className='icon icon-language'></i>
+									<h5>Language:</h5>
+									<span>English, German, Spanish</span>
+								</li>
+
+								<li>
+									<i className='icon icon-degree'></i>
+									<h5>Education Level:</h5>
+									<span>Master Degree</span>
+								</li>
+							</ul>
+						</div>
+					</div>
+
+					<div className='sidebar-widget social-media-widget'>
+						<h4 className='widget-title'>Social media</h4>
+						<div className='widget-content'>
+							<div className='social-links'>
+								<a href='#'>
+									<i className='fab fa-facebook-f'></i>
+								</a>
+								<a href='#'>
+									<i className='fab fa-twitter'></i>
+								</a>
+								<a href='#'>
+									<i className='fab fa-instagram'></i>
+								</a>
+								<a href='#'>
+									<i className='fab fa-linkedin-in'></i>
+								</a>
+							</div>
+						</div>
+					</div>
+
+					<div className='sidebar-widget'>
+						<h4 className='widget-title'>Professional Skills</h4>
+						<div className='widget-content'>
+							<ul className='job-skills'>
+								<li>
+									<a href='#'>app</a>
+								</li>
+								<li>
+									<a href='#'>administrative</a>
+								</li>
+								<li>
+									<a href='#'>android</a>
+								</li>
+								<li>
+									<a href='#'>wordpress</a>
+								</li>
+								<li>
+									<a href='#'>design</a>
+								</li>
+								<li>
+									<a href='#'>react</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+
+					<div className='sidebar-widget contact-widget'>
+						<h4 className='widget-title'>Contact Us</h4>
+						<div className='widget-content'>
+							<div className='default-form'>
+								<form>
+									<div className='row clearfix'>
+										<div className='col-lg-12 col-md-12 col-sm-12 form-group'>
+											<input
+												type='text'
+												name='username'
+												placeholder='Your Name'
+												required
+											/>
+										</div>
+										<div className='col-lg-12 col-md-12 col-sm-12 form-group'>
+											<input
+												type='email'
+												name='email'
+												placeholder='Email Address'
+												required
+											/>
+										</div>
+										<div className='col-lg-12 col-md-12 col-sm-12 form-group'>
+											<textarea
+												className='darma'
+												name='message'
+												placeholder='Message'></textarea>
+										</div>
+										<div className='col-lg-12 col-md-12 col-sm-12 form-group'>
+											<button
+												className='theme-btn btn-style-one'
+												type='submit'
+												name='submit-form'>
+												Send Message
+											</button>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</aside>
+			</div>
 			<Footer />
 		</>
 	);

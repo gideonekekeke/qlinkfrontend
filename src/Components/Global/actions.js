@@ -4,7 +4,9 @@ const initialState = {
 	MainUser: [],
 	cartbookings: [],
 	otherUser: [],
-	details: null,
+
+	AddingFriends: [],
+	current : null
 };
 
 const actions = createSlice({
@@ -17,8 +19,18 @@ const actions = createSlice({
 		viewDetails: (state, { payload }) => {
 			state.details = payload;
 		},
+		user: (state, { payload }) => {
+			state.current = payload;
+		},
+
+		signOut: (state) => {
+		state.current = null;
+		},
 		otherUsers: (state, { payload }) => {
 			state.otherUser = payload;
+		},
+		shootFriend: (state, { payload }) => {
+			state.AddingFriends = payload;
 		},
 		addTobook: (state, { payload }) => {
 			const bookValue = state.cartbookings.findIndex(
@@ -64,5 +76,8 @@ export const {
 	removeFromBookings,
 	totalValue,
 	otherUsers,
+	shootFriend,
+	user,
+	signOut
 } = actions.actions;
 export default actions.reducer;

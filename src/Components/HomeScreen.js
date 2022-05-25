@@ -18,7 +18,7 @@ const HomeScreen = () => {
 const [load, setLoad] = React.useState(true);
 			const getUser = async () => {
 				const res = await axios
-					.get(`https://newqlinksbackapi.vercel.app/api/user`)
+					.get(`https://newqlinksbackapi.vercel.app/api/user?limit=5`)
 					.then((response) => {
 						console.log("my wounsdfh", response);
 						setData(response?.data?.data);
@@ -29,7 +29,8 @@ const [load, setLoad] = React.useState(true);
       
 				const getJobs = async () => {
 					const res = await axios
-						.get("https://newqlinksbackapi.vercel.app/api/jobs/alljobs")
+						.get(`https://qlinkappi.herokuapp.com/api/jobs/alljobs?limit=6`,
+						)
 						.then((response) => {
 							console.log("my main now", response);
 							setDataV(response?.data);

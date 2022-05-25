@@ -10,7 +10,7 @@
 
 @media screen and (max-width: 3000px) {
     .sidebar {
-        display: none;
+        display: block;
     }
 }
 

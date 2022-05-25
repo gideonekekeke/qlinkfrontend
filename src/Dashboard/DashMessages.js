@@ -13,9 +13,10 @@ import moment from "moment";
 import { io } from "socket.io-client";
 const DashMessages = () => {
 	const { current } = useContext(GlobalContext);
+	const readData = useSelector((state) => state?.persistedReducer.MainUser);
 
-	const readData = useSelector((Action) => Action.dmyReducers.MainUser);
-	const readData2 = useSelector((Action) => Action.dmyReducers.otherUser);
+	console.log("na me", readData);
+	const readData2 = useSelector((state) => state?.persistedReducer?.otherUser);
 
 	console.log("reading", readData);
 	const dispatch = useDispatch();
@@ -23,6 +24,8 @@ const DashMessages = () => {
 	const [message, setMessage] = React.useState("");
 	const [show, setShow] = React.useState(false);
 	const myId = current?._id;
+
+	console.log('am getting the current user now', current)
 	const [load, setLoad] = React.useState(true);
 	const [holdData, setHoldData] = React.useState();
 	const [dataFriend, setDataFriend] = React.useState([]);
@@ -34,10 +37,8 @@ const DashMessages = () => {
 	const fetchDetails = async () => {
 		await axios
 			.get(`https://qlinkappi.herokuapp.com/api/user/${myId}`)
-
 			.then((response) => {
 				// console.log("get the user", response);
-
 				setData(response?.data?.data);
 			});
 		setLoad(false);
@@ -66,7 +67,10 @@ const DashMessages = () => {
 	const ChatMessage = async (e) => {
 		e.preventDefault();
 		await axios
-			.post(`https://qlinkappi.herokuapp.com/api/user/${readData._id}/chat`, pastData)
+			.post(
+				`https://qlinkappi.herokuapp.com/api/user/${readData._id}/chat`,
+				pastData,
+			)
 
 			.then((response) => {
 				window.location.reload();
@@ -76,7 +80,10 @@ const DashMessages = () => {
 	const ChatMessage2 = async (e) => {
 		e.preventDefault();
 		await axios
-			.post(`https://qlinkappi.herokuapp.com/api/user/${readData._id}/chat`, pastData2)
+			.post(
+				`https://qlinkappi.herokuapp.com/api/user/${readData._id}/chat`,
+				pastData2,
+			)
 
 			.then((response) => {
 				window.location.reload();
@@ -89,7 +96,7 @@ const DashMessages = () => {
 			.get(url)
 
 			.then((response) => {
-				console.log("geting all messages", response);
+				console.log("geting all kk messages", response);
 				setChatH(response?.data);
 			});
 	};
@@ -124,7 +131,7 @@ const DashMessages = () => {
 		setLoad(false);
 	};
 
-	// const socket = io(`https://qlinkappi.herokuapp.com/${readData._id}`);
+	// const socket = io(`http://localhost:6905`);
 	// socket.connect("observer", (data) => {
 	// 	console.log("thia ia rhwebjdn", data);
 	// 	// setChatH([...ChatH, data]);
@@ -222,13 +229,9 @@ const DashMessages = () => {
 															<>
 																{allFriend?.map((props) => (
 																	<>
-																		{allFriend?.find(
-																			(el) =>
-																				el?.addedID === current?._id &&
-																				ChatH?.find(
-																					(ef) => ef?.userChat === props?._id,
-																				),
-																		) ? (
+																	
+																		{props?.addedID === current?._id	
+																		 ? (
 																			<>
 																				<OtherUser
 																					dID={props?.userFriend}
@@ -354,7 +357,7 @@ const DashMessages = () => {
 																	onClick={ChatMessage}
 																	type='button'
 																	class='theme-btn btn-style-one submit-btn'>
-																	Send Message
+																	Send Messagessss
 																</button>
 															)}
 														</div>

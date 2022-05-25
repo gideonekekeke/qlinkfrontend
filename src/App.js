@@ -26,6 +26,9 @@ import ShortListJobs from "./Dashboard/ShortListJobs";
 import ApplyForm from "./Dashboard/ApplyForm";
 import PrivateRoute from "./Components/Global/PrivateRoute";
 import DashMessages from "./Dashboard/DashMessages";
+import DetailsBuild from "./Components/DetailsBuild";
+import OtpVerificationInput from "./Components/RegisterPage/OtpVerificationInput";
+import VerificationPage from "./Components/RegisterPage/VerificationPage";
 
 const App = () => {
 	//  const location = useLocation();
@@ -39,7 +42,15 @@ const App = () => {
 					<Route path='/' element={<HomeScreen />} />
 					<Route path='/findjob' element={<JobListing />} />
 					<Route path='/:id/findjobDetail' element={<JobDetails />} />
-					<Route path='/:id/profile' element={<UserProfile />} />
+					<Route path='/:id/profile' element={<DetailsBuild />} />
+					<Route
+						path='/api/user/dev/:id/:token'
+						element={<OtpVerificationInput />}
+					/>
+					<Route
+						path='/api/user/client/reg/:id/:token'
+						element={<VerificationPage />}
+					/>
 					<Route path='/Developers' element={<Developers />} />
 					<Route
 						path='/dashboard'
@@ -55,6 +66,7 @@ const App = () => {
 						element={<ProfilePage />}
 					/>
 					<Route path='/jobapplied' element={<JobApplied />} />
+
 					<Route path='/Postjobs' element={<PostJobs />} />
 					<Route path='/managejobs' element={<ManageJobs />} />
 					<Route path='/shortlistjobs' element={<ShortListJobs />} />
