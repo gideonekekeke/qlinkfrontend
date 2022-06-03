@@ -1,5 +1,11 @@
 /* Superio | Just another HTML Template  */
 
+@media only screen and (max-width:780px){
+	.header-style-four.fixed-header{
+		background-color : white !important;
+	}
+}
+
 @media only screen and (max-width: 1600px){
 	.main-menu .navigation > li{
 		margin-right: 35px;
@@ -23,7 +29,6 @@
 	.job-search-form{
 		min-width: auto;
 	}
-
 	.job-search-form form{
 		padding: 15px 15px;
 		border-radius: 10px;

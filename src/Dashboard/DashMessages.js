@@ -25,7 +25,7 @@ const DashMessages = () => {
 	const [show, setShow] = React.useState(false);
 	const myId = current?._id;
 
-	console.log('am getting the current user now', current)
+	console.log("am getting the current user now", current);
 	const [load, setLoad] = React.useState(true);
 	const [holdData, setHoldData] = React.useState();
 	const [dataFriend, setDataFriend] = React.useState([]);
@@ -84,7 +84,6 @@ const DashMessages = () => {
 				`https://qlinkappi.herokuapp.com/api/user/${readData._id}/chat`,
 				pastData2,
 			)
-
 			.then((response) => {
 				window.location.reload();
 				// console.log("get users now", response);
@@ -131,7 +130,6 @@ const DashMessages = () => {
 		setLoad(false);
 	};
 
-	// const socket = io(`http://localhost:6905`);
 	// socket.connect("observer", (data) => {
 	// 	console.log("thia ia rhwebjdn", data);
 	// 	// setChatH([...ChatH, data]);
@@ -147,6 +145,10 @@ const DashMessages = () => {
 		fetchAllUsers();
 		getAllFriends();
 		GettAllChat();
+
+		const socket = io(`http://localhost:6905`);
+
+		console.log("this is socked", socket);
 	}, [myId, readData]);
 
 	return (
@@ -229,9 +231,7 @@ const DashMessages = () => {
 															<>
 																{allFriend?.map((props) => (
 																	<>
-																	
-																		{props?.addedID === current?._id	
-																		 ? (
+																		{props?.addedID === current?._id ? (
 																			<>
 																				<OtherUser
 																					dID={props?.userFriend}

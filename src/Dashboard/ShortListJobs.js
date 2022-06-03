@@ -92,19 +92,20 @@ getUser()
 															<td>{moment(props?.createdAt).fromNow()}</td>
 															<td class='status'>Active</td>
 															<td>
-																<div class='option-box'>
-																	<ul class='option-list'>
-																		<li>
-																			<Link
-																				to={`/${props._id}/applyform`}>
-																			<button data-text='View Aplication'>
-																				<span class='la la-eye'></span>
-                                     
-																			</button>
-                                         </Link>
-																		</li>
-																	</ul>
-																</div>
+																
+																	
+																	
+																			<Link to={`/${props._id}/applyform`}>
+																				<button
+																				
+																					type='button'
+																					class='theme-btn btn-style-one submit-btn'>
+																					Apply
+																				</button>
+																			</Link>
+																	
+																	
+															
 															</td>
 														</tr>
 													))}
