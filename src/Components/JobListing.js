@@ -1,12 +1,14 @@
 import axios from 'axios'
 import moment from 'moment'
-import React from 'react'
+import React,{useContext} from 'react'
 import Footer from './Footer'
 import Header from './Header'
+import { GlobalContext } from './Global/GlobalContext'
 
 const JobListing = () => {
     const [dataV, setDataV] = React.useState([]);
   const [load, setLoad] = React.useState(true)
+  const {search, setSearch, showResult, setShowResult,dloading, setDloading} = useContext(GlobalContext)
   		const getJobs = async () => {
 				const res = await axios
 					.get("https://newqlinksbackapi.vercel.app/api/jobs/alljobs")
@@ -282,7 +284,10 @@ getJobs()
 								</div>
 
 								<div class='row'>
-									{dataV?.map((props) => (
+								{
+									
+									dloading ? (<div>{
+										dataV?.map((props) => (
 										<div class='job-block col-lg-6 col-md-12 col-sm-12'>
 											<div class='inner-box'>
 												<div class='content'>
@@ -323,7 +328,60 @@ getJobs()
 												</div>
 											</div>
 										</div>
-									))}
+									))
+										}</div>) : (<div>
+
+											{
+												showResult?.data?.map((props) => (
+										<div class='job-block col-lg-6 col-md-12 col-sm-12'>
+											<div class='inner-box'>
+												<div class='content'>
+													<span class='company-logo'>
+														<img
+															src='images/resource/company-logo/lu1.png'
+															alt=''
+														/>
+													</span>
+													<h4>
+														<a href={`/${props?._id}/findjobDetail`}>{props?.jobTitle}</a>
+													</h4>
+													<ul class='job-info'>
+														<li>
+															<span class='icon flaticon-briefcase'></span>{" "}
+													 {props?.selectTime}
+														</li>
+														<li>
+															<span class='icon flaticon-map-locator'></span>{" "}
+														{props?.location}
+														</li>
+														<li>
+															<span class='icon flaticon-clock-3'></span> 11
+															{moment(props?.createdAt).fromNow()}
+														</li>
+														<li>
+															<span class='icon flaticon-money'></span> {props?.budget}
+														</li>
+													</ul>
+													<ul class='job-other-info'>
+														<li class='time'>{props?.selectTime}</li>
+														<li class='privacy'>Private</li>
+														<li class='required'>Urgent</li>
+													</ul>
+													<button class='bookmark-btn'>
+														<span class='flaticon-bookmark'></span>
+													</button>
+												</div>
+											</div>
+										</div>
+									))
+											}
+
+									</div>)
+									
+
+
+									
+									}
 								</div>
 
 								<nav class='ls-pagination mb-5'>
