@@ -393,6 +393,17 @@ const myId = current?._id
 														<option>Female</option>
 													</select>
 												</div>
+												<div class='form-group col-lg-6 col-md-12'>
+												<label>Upload CV</label>
+												<input
+												class='uploadButton-input'
+												type='file'
+												id='upload'
+												placeholder='Upload CV'
+												// onChange={imageOnchange}
+											/></div>
+
+											
 
 												{/* <div class="form-group col-lg-6 col-md-12">
                         <label>Allow In Search & Listing</label>

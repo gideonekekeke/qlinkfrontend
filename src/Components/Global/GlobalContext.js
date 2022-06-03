@@ -8,6 +8,9 @@ export const AuthProvide = ({children})=>{
     
       const [show, setShow] = React.useState(false)
       const [current, setCurrent] = React.useState(null)
+      const [search, setSearch] = React.useState("")
+      const [showResult, setShowResult] = React.useState([])
+      const [dloading, setDloading] = React.useState(true)
 
      
 	const user = useSelector(
@@ -27,7 +30,13 @@ export const AuthProvide = ({children})=>{
         <GlobalContext.Provider value = {{
             show,
              handleShow,
-             current
+             current,
+             search,
+             setSearch,
+             showResult,
+             setShowResult,
+             dloading,
+             setDloading
         }}>
             {children}
         </GlobalContext.Provider>

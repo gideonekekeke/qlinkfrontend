@@ -8,12 +8,75 @@ import { GlobalContext } from './Global/GlobalContext'
 import Header from './Header'
 import Footer from './Footer'
 import { useSelector } from 'react-redux'
+import {useForm} from "react-hook-form"
 import axios from 'axios'
 import ClipLoader from "react-spinners/ClipLoader";
+import {yupResolver} from "@hookform/resolvers/yup"
+import * as yup from "yup"
+import {useNavigate} from  "react-router-dom"
+import Swal from "sweetalert2"
+import Loading from './LoadState'
+
+
 const HomeScreen = () => {
 
       const [data, setData] = React.useState([]);
 		  const [dataV, setDataV] = React.useState([]);
+		  const [loading, setLoading] = React.useState(false)
+		  const {search, setSearch, showResult, setShowResult, dloading, setDloading} = useContext(GlobalContext)
+
+
+		  const toggleLoading = ()=>{
+			  setLoading(true)
+		  }
+		  
+  const myNavigation = useNavigate()
+
+  const userModel = yup.object().shape({
+   usersearch:yup.string().required("please put in your email"),
+  
+  
+ })
+
+ const {register, handleSubmit, formState:{errors}} = useForm({
+   resolver : yupResolver(userModel)
+ })
+
+ const submit = handleSubmit(async(data)=>{
+			console.log(data)
+			const  {usersearch} = data
+				console.log("this is what im passing", usersearch)
+		
+				try{
+					await axios.get(`https://qlinkappi.herokuapp.com/api/jobs/myjobs/jobs?search=${usersearch}`).then((result)=>{
+						console.log("this is the data", result.data)
+						if(!result.data.length){
+						   Swal.fire({
+							  icon: 'error',
+							  title: 'Oops...',
+							  text: 'Wrong Search!',
+		  // footer: '<a href="">Why do I have this issue?</a>'
+					  }).then(()=>{
+						setLoading(false)
+					  })
+							return
+							setLoading(false)
+						}
+						setShowResult(result)
+						myNavigation("/findjob")
+						setDloading(!dloading)
+						console.log("the result commig from the search input", showResult)
+					
+					})
+		
+				}catch(error){
+					console.log("something went wrong white searching")
+					setLoading(false)
+				}
+			
+		  
+		
+		  })
 
 const [load, setLoad] = React.useState(true);
 			const getUser = async () => {
@@ -29,7 +92,7 @@ const [load, setLoad] = React.useState(true);
       
 				const getJobs = async () => {
 					const res = await axios
-						.get(`https://qlinkappi.herokuapp.com/api/jobs/alljobs?limit=6`,
+						.get(`https://qlinkappi.herokuapp.com/api/jobs/alljobs?limit=5`,
 						)
 						.then((response) => {
 							console.log("my main now", response);
@@ -71,14 +134,20 @@ const [load, setLoad] = React.useState(true);
 						<div
 							className='job-search-form wow fadeInUp'
 							data-wow-delay='1000ms'>
-							<form method='post' action='job-list-v10.html'>
+							<form method='post'  onSubmit={(e)=>{
+								e.preventDefault()
+								submit()
+								toggleLoading()
+							}}>
 								<div className='row justify-content-center justify-content-md-between'>
 									<div className='form-group col-lg-9'>
 										<span className='icon flaticon-search-1'></span>
 										<input
-											type='text'
-											name='field_name'
-											placeholder='Job title, keywords, or company'
+										type='text'
+										name='field_name'
+										placeholder='Job title, keywords, or company'
+										required
+										{...register('usersearch')}
 										/>
 									</div>
 									<div className='form-group col-auto'>
@@ -88,6 +157,9 @@ const [load, setLoad] = React.useState(true);
 									</div>
 								</div>
 							</form>
+							{
+								loading ? <Loading  loading = {loading}   />:null
+							}
 						</div>
 
 						<div className='features-icons'>
