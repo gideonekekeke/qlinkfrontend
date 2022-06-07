@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useResolvedPath } from "react-router-dom";
 import { GlobalContext } from "../Components/Global/GlobalContext";
 import DashHeader from "./DashHeader";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -11,6 +11,9 @@ import { useThemeProps } from "@mui/material";
 import OtherUser from "./OtherUser";
 import moment from "moment";
 import { io } from "socket.io-client";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import swal from "sweetalert";
 const DashMessages = () => {
 	const { current } = useContext(GlobalContext);
 	const readData = useSelector((state) => state?.persistedReducer.MainUser);
@@ -33,7 +36,11 @@ const DashMessages = () => {
 	const [manyU, setManyU] = React.useState([]);
 	const [ChatH, setChatH] = React.useState([]);
 
-	const url = "https://qlinkappi.herokuapp.com/api/user/chat/user";
+	const myFubc = () => {
+		setMessage("");
+	};
+
+	const url = "https://qlinkappi.herokuapp.com";
 	const fetchDetails = async () => {
 		await axios
 			.get(`https://qlinkappi.herokuapp.com/api/user/${myId}`)
@@ -58,14 +65,16 @@ const DashMessages = () => {
 	const pastData = {
 		message: message,
 		sendTo: readData?.addedID,
+		sendingUser: "ty4t",
 	};
 	const pastData2 = {
 		message: message,
 		sendTo: readData2?._id,
+		sendingUser: "dge",
 	};
 
 	const ChatMessage = async (e) => {
-		e.preventDefault();
+		// e.preventDefault();
 		await axios
 			.post(
 				`https://qlinkappi.herokuapp.com/api/user/${readData._id}/chat`,
@@ -73,21 +82,31 @@ const DashMessages = () => {
 			)
 
 			.then((response) => {
-				window.location.reload();
+				if (response.status === 201) {
+					myFubc();
+				}
+				myFubc();
+				// window.location.reload();
 				// console.log("get users now", response);
 			});
+		setMessage(message);
 	};
 	const ChatMessage2 = async (e) => {
-		e.preventDefault();
+		// e.preventDefault();
 		await axios
 			.post(
 				`https://qlinkappi.herokuapp.com/api/user/${readData._id}/chat`,
 				pastData2,
 			)
 			.then((response) => {
-				window.location.reload();
+				if (response.status === 201) {
+					myFubc();
+				}
+				myFubc();
+				// window.location.reload();
 				// console.log("get users now", response);
 			});
+		setMessage(message);
 	};
 
 	const GettAllChat = async () => {
@@ -95,14 +114,16 @@ const DashMessages = () => {
 			.get(url)
 
 			.then((response) => {
-				console.log("geting all kk messages", response);
+				console.log("geting all canmessages", response);
 				setChatH(response?.data);
 			});
 	};
 	const getFriends = async () => {
 		if (readData) {
 			await axios
-				.get(`https://qlinkappi.herokuapp.com/${readData._id}`)
+				.get(
+					`https://qlinkappi.herokuapp.com/api/user/${readData._id}/friending`,
+				)
 
 				.then((response) => {
 					// console.log("AM GETTING FRIENDSr", response);
@@ -120,20 +141,45 @@ const DashMessages = () => {
 	};
 	const getAllFriends = async () => {
 		await axios
-			.get(`https://qlinkappi.herokuapp.com`)
+			.get(`https://qlinkappi.herokuapp.com/api/user/friends/all`)
 
 			.then((response) => {
-				// console.log("this are the friends oooo", response?.data);
+				console.log("this are the friends oooojhbgvcvghjhgj", response?.data);
 
 				setAllFriend(response?.data);
 			});
 		setLoad(false);
 	};
+	const customId = "custom-id-yes";
 
-	// socket.connect("observer", (data) => {
-	// 	console.log("thia ia rhwebjdn", data);
-	// 	// setChatH([...ChatH, data]);
-	// });
+	const socket = io(url);
+
+	socket.on("observer", (data) => {
+		console.log("socket new data vgnposted", data);
+
+		if (data?.sendTo === current?._id) {
+			toast.success(`you have one new message`, {
+				position: "top-right",
+				autoClose: false,
+				toastId: customId,
+				icon: "🚀",
+				hideProgressBar: false,
+				closeOnClick: true,
+				pauseOnHover: true,
+				draggable: true,
+				progress: undefined,
+			});
+
+				// swal({
+				// 	title: " Success",
+				// 	text: "A message has been sent to your email address to confirm your account",
+				// 	icon: "success",
+				// });
+
+			console.log("incoming message for you");
+		}
+		setChatH([...ChatH, data]);
+	});
 
 	React.useEffect(() => {
 		fetchDetails();
@@ -146,14 +192,13 @@ const DashMessages = () => {
 		getAllFriends();
 		GettAllChat();
 
-		const socket = io(`http://localhost:6905`);
-
-		console.log("this is socked", socket);
-	}, [myId, readData]);
+		console.log("this is socked friend", allFriend);
+	}, [myId, readData, current]);
 
 	return (
 		<div class='page-wrapper dashboard'>
 			<DashHeader />
+			<ToastContainer/>
 
 			<section style={{ marginTop: "50px" }} class='user-dashboard'>
 				<div class='dashboard-outer'>
@@ -281,64 +326,72 @@ const DashMessages = () => {
 
 													<div class='card-body msg_card_body'>
 														<>
-															{dataFriend?.map((props) => (
+															{ChatH?.map((props) => (
 																<>
-																	{props?.sendTo !== current?._id ? (
-																		<div class='d-flex justify-content-start'>
-																			<div class='img_cont_msg'>
-																				<img
-																					src='images/resource/candidate-3.png'
-																					alt=''
-																					class='rounded-circle user_img_msg'
-																				/>
-																				<div class='name'>
-																					{current?.name}
-																					<span class='msg_time'>
-																						{moment(props?.createdAt).fromNow()}
-																					</span>
-																				</div>
-																			</div>
-																			<div class='msg_cotainer'>
-																				{" "}
-																				{props?.message}
-																			</div>
-																		</div>
-																	) : (
-																		<div class='d-flex justify-content-end mb-2 reply'>
-																			<div class='img_cont_msg'>
-																				<img
-																					src='images/resource/candidate-6.png'
-																					alt=''
-																					class='rounded-circle user_img_msg'
-																				/>
-																				<div class='name'>
-																					{data?.isDeveloper ? (
-																						<>{readData2?.name}</>
-																					) : (
-																						<>{readData?.userName}</>
-																					)}
-																					<span class='msg_time'>
+																	{props?.userChat === readData?._id ? (
+																		<>
+																			{props?.sendTo !== current?._id ? (
+																				<div class='d-flex justify-content-start'>
+																					<div class='img_cont_msg'>
+																						<img
+																							src='images/resource/candidate-3.png'
+																							alt=''
+																							class='rounded-circle user_img_msg'
+																						/>
+																						<div class='name'>
+																							{data?.isDeveloper ? (
+																								<>{readData?.userName}</>
+																							) : (
+																								<>{current?.name}</>
+																							)}
+																							<span class='msg_time'>
+																								{moment(
+																									props?.createdAt,
+																								).fromNow()}
+																							</span>
+																						</div>
+																					</div>
+																					<div class='msg_cotainer'>
 																						{" "}
-																						{moment(props?.createdAt).fromNow()}
-																					</span>
+																						{props?.message}
+																					</div>
 																				</div>
-																			</div>
-																			<div class='msg_cotainer'>
-																				{props?.message}
-																			</div>
-																		</div>
-																	)}
+																			) : (
+																				<div class='d-flex justify-content-end mb-2 reply'>
+																					<div class='img_cont_msg'>
+																						<img
+																							src='images/resource/candidate-6.png'
+																							alt=''
+																							class='rounded-circle user_img_msg'
+																						/>
+																						<div class='name'>
+																							{data?.isDeveloper ? (
+																								<>{readData2?.name}</>
+																							) : (
+																								<>{readData?.userName}</>
+																							)}
+																							<span class='msg_time'>
+																								{" "}
+																								{moment(
+																									props?.createdAt,
+																								).fromNow()}
+																							</span>
+																						</div>
+																					</div>
+																					<div class='msg_cotainer'>
+																						{props?.message}
+																					</div>
+																				</div>
+																			)}
+																		</>
+																	) : null}
 																</>
 															))}
 														</>
 													</div>
 
 													<div class='card-footer'>
-														<div
-															onSubmit={(e) => {
-																e.preventDefault();
-															}}
-															class='form-group mb-0'>
+														<div class='form-group mb-0'>
 															<textarea
 																onChange={(e) => {
 																	setMessage(e.target.value);
@@ -347,17 +400,25 @@ const DashMessages = () => {
 																placeholder='Type a message...'></textarea>
 															{data?.isDeveloper ? (
 																<button
-																	onClick={ChatMessage2}
+																	onClick={() => {
+																		ChatMessage2();
+																		setMessage("");
+																		 myFubc();
+																	}}
 																	type='button'
 																	class='theme-btn btn-style-one submit-btn'>
 																	Send Message
 																</button>
 															) : (
 																<button
-																	onClick={ChatMessage}
+																	onClick={() => {
+																		ChatMessage();
+																		setMessage("");
+																		 myFubc();
+																	}}
 																	type='button'
 																	class='theme-btn btn-style-one submit-btn'>
-																	Send Messagessss
+																	Send Messages
 																</button>
 															)}
 														</div>
@@ -395,3 +456,23 @@ const DashMessages = () => {
 };
 
 export default DashMessages;
+
+// {
+// 	ChatH?.map((props) => (
+// 		<>
+// 			{props?.userChat === readData._id ? (
+// 				<>
+// 					{props?.sendTo !== current?._id ? (
+// 						<div>
+// 							{props.message} <span>from me</span>
+// 						</div>
+// 					) : (
+// 						<div>
+// 							{props.message} <span>from other</span>
+// 						</div>
+// 					)}
+// 				</>
+// 			) : null}
+// 		</>
+// 	));
+// }

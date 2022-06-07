@@ -13,7 +13,7 @@ const [load, setLoad] = React.useState(true);
 
 	const getUser = async () => {
 		const res = await axios
-			.get(`https://newqlinksbackapi.vercel.app/api/jobs/${id}/${id}/singlejob`)
+			.get(`https://qlinkappi.herokuapp.com/api/jobs/${id}/${id}/singlejob`)
 			.then((response) => {
 				console.log("see the details", response);
 				setData(response?.data?.data);

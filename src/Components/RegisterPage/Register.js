@@ -116,7 +116,7 @@ const Register = () => {
 							icon: "error",
 							button: "ok",
 						}).then((value) => {
-							setLoading(false)
+							setLoading(false);
 							// swal(hist(window.location.reload()));
 						});
 					}

@@ -1,15 +1,16 @@
 import axios from "axios";
-import React from "react";
+import React, { useContext } from "react";
 import Footer from "./Footer";
+import { GlobalContext } from "./Global/GlobalContext";
 import Header from "./Header";
 
 const Developers = () => {
-
+   const {current} = useContext(GlobalContext)
 	  const [data, setData] = React.useState([]);
 
 		const getUser = async () => {
 			const res = await axios
-				.get(`https://newqlinksbackapi.vercel.app/api/user`)
+				.get(`https://qlinkappi.herokuapp.com/api/user`)
 				.then((response) => {
 					console.log("my wounsdfh", response);
 					setData(response?.data?.data);
@@ -34,7 +35,7 @@ const Developers = () => {
 						</ul>
 					</div>
 					<div class='job-search-form'>
-						<form method='post' action='job-list-v10.html'>
+						<form method='post' >
 							<div class='row'>
 								<div class='form-group col-lg-4 col-md-12 col-sm-12'>
 									<span class='icon flaticon-search-1'></span>
@@ -71,7 +72,7 @@ const Developers = () => {
 
 								<div class='form-group col-lg-2 col-md-12 col-sm-12 text-right'>
 									<button type='submit' class='theme-btn btn-style-one'>
-										Find Jobs
+										Find Developers
 									</button>
 								</div>
 							</div>
@@ -162,8 +163,12 @@ const Developers = () => {
 									data.map((props)=>(
 										<>
 										{
-											props?.isDeveloper ? 	<div class='candidate-block-four col-lg-4 col-md-6 col-sm-12'>
-										<div class='inner-box'>
+											props?.isDeveloper ? 
+											<>
+
+											{
+											   current?._id === props._id? null : 	<div class='candidate-block-four col-lg-4 col-md-6 col-sm-12'>
+										      <div class='inner-box'>
 											<ul class='job-other-info'>
 												<li class='green'>Featured</li>
 											</ul>
@@ -201,7 +206,11 @@ const Developers = () => {
 												View Profile
 											</a>
 										</div>
-									</div> : null
+									</div>
+											}
+											
+											</>
+										 : null
 										}
 										
 										</>

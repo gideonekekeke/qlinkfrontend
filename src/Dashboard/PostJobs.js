@@ -31,32 +31,36 @@ const PostJobs = () => {
      const postData = async()=>{
 
     
-       await axios.post(`https://newqlinksbackapi.vercel.app/api/jobs/${myId}/jobposting `, {
-         contactEmail,
-         jobTitle,
-         description,
-         budget,
-         SelectTime,
-         location,
-         skillSet,
-         experience,
-         projectDuration
+       await axios
+					.post(
+						`https://qlinkappi.herokuapp.com/api/jobs/${myId}/jobposting `,
+						{
+							contactEmail,
+							jobTitle,
+							description,
+							budget,
+							SelectTime,
+							location,
+							skillSet,
+							experience,
+							projectDuration,
+						},
+					)
+					.then((response) => {
+						hist("/dashboard");
+						window.location.reload();
+						swal({
+							title: " Success",
+							text: "Your Product Has Been Uploaded",
+							icon: "success",
+							button: "ok",
+						}).then((value) => {
+							swal(hist("/dashboard"));
+						});
 
-       }).then((response)=>{
-         hist('/dashboard')
-         window.location.reload()
-               swal({
-            title: " Success",
-            text: "Your Product Has Been Uploaded",
-            icon: "success",
-            button: "ok",
-          }).then((value) => {
-            swal(hist('/dashboard'));
-          }); 
-    
-            //  console.log(response.data.data.CreateUser)
-            //  handleShow()
-       })
+						//  console.log(response.data.data.CreateUser)
+						//  handleShow()
+					});
        
        setLoading(false)
      

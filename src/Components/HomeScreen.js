@@ -1,55 +1,118 @@
-import React, { useContext } from 'react'
-import '../css/bootstrap.css'
-import './css/bootstrap.css'
-import '../css/style.css'
-import '../css/responsive.css'
-import { Link } from 'react-router-dom'
-import { GlobalContext } from './Global/GlobalContext'
-import Header from './Header'
-import Footer from './Footer'
-import { useSelector } from 'react-redux'
-import axios from 'axios'
+import React, { useContext } from "react";
+import "../css/bootstrap.css";
+import "./css/bootstrap.css";
+import "../css/style.css";
+import "../css/responsive.css";
+import { Link } from "react-router-dom";
+import { GlobalContext } from "./Global/GlobalContext";
+import Header from "./Header";
+import Footer from "./Footer";
+import { useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
+import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import Loading from "./LoadState";
+
 const HomeScreen = () => {
+	const [data, setData] = React.useState([]);
+	const [dataV, setDataV] = React.useState([]);
+	const [loading, setLoading] = React.useState(false);
+	const {
+		search,
+		setSearch,
+		showResult,
+		setShowResult,
+		dloading,
+		setDloading,
+		current
+	} = useContext(GlobalContext);
 
-      const [data, setData] = React.useState([]);
-		  const [dataV, setDataV] = React.useState([]);
+	const toggleLoading = () => {
+		setLoading(true);
+	};
 
-const [load, setLoad] = React.useState(true);
-			const getUser = async () => {
-				const res = await axios
-					.get(`https://qlinkappi.herokuapp.com/api/user?limit=${6}`)
-					.then((response) => {
-						console.log("my wounsdfh", response);
-						setData(response?.data?.data);
-					});
-              setLoad(false);
-			};
+	const myNavigation = useNavigate();
 
-      
-				const getJobs = async () => {
-					const res = await axios
-						.get(`https://qlinkappi.herokuapp.com/api/jobs/alljobs?limit=${6}`,
-						)
-						.then((response) => {
-							console.log("my main now", response);
-							setDataV(response?.data);
+	const userModel = yup.object().shape({
+		usersearch: yup.string().required("please put in your email"),
+	});
+
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm({
+		resolver: yupResolver(userModel),
+	});
+
+	const submit = handleSubmit(async (data) => {
+		console.log(data);
+		const { usersearch } = data;
+		console.log("this is what im passing", usersearch);
+
+		try {
+			await axios
+				.get(
+					`https://qlinkappi.herokuapp.com/api/jobs/myjobs/jobs?search=${usersearch}`,
+				)
+				.then((result) => {
+					console.log("this is the data", result.data);
+					if (!result?.data?.length) {
+						Swal.fire({
+							icon: "error",
+							title: "Oops...",
+							text: "Wrong Search!",
+							// footer: '<a href="">Why do I have this issue?</a>'
+						}).then(() => {
+							setLoading(false);
 						});
-            setLoad(false)
-				};
+						return;
+						setLoading(false);
+					}
+					setShowResult(result);
+					myNavigation("/findjob");
+					setDloading(!dloading);
+					console.log("the result commig from the search input", showResult);
+				});
+		} catch (error) {
+			console.log("something went wrong white searching");
+			setLoading(false);
+		}
+	});
 
-			
+	const [load, setLoad] = React.useState(true);
+	const getUser = async () => {
+		const res = await axios
+			.get(`https://qlinkappi.herokuapp.com/api/user?limit=${6}`)
+			.then((response) => {
+				console.log("my wounsdfh", response);
+				setData(response?.data?.data);
+			});
+		setLoad(false);
+	};
 
+	const getJobs = async () => {
+		const res = await axios
+			.get(`https://qlinkappi.herokuapp.com/api/jobs/alljobs?limit=${6}`)
+			.then((response) => {
+				console.log("my main now", response);
+				setDataV(response?.data);
+			});
+		setLoad(false);
+	};
 
-    React.useEffect(()=>{
-      getUser()
-       getJobs(); 
-    },[])
- 
-  const { handleShow} = useContext(GlobalContext)
+	React.useEffect(() => {
+		getUser();
+		getJobs();
+	}, []);
 
+	const { handleShow } = useContext(GlobalContext);
 
-  return (
+	return (
 		<div className='page-wrapper'>
 			<Header />
 
@@ -70,7 +133,13 @@ const [load, setLoad] = React.useState(true);
 						<div
 							className='job-search-form wow fadeInUp'
 							data-wow-delay='1000ms'>
-							<form method='post' action='job-list-v10.html'>
+							<form
+								method='post'
+								onSubmit={(e) => {
+									e.preventDefault();
+									submit();
+									toggleLoading();
+								}}>
 								<div className='row justify-content-center justify-content-md-between'>
 									<div className='form-group col-lg-9'>
 										<span className='icon flaticon-search-1'></span>
@@ -78,6 +147,8 @@ const [load, setLoad] = React.useState(true);
 											type='text'
 											name='field_name'
 											placeholder='Job title, keywords, or company'
+											required
+											{...register("usersearch")}
 										/>
 									</div>
 									<div className='form-group col-auto'>
@@ -87,6 +158,7 @@ const [load, setLoad] = React.useState(true);
 									</div>
 								</div>
 							</form>
+							{loading ? <Loading loading={loading} /> : null}
 						</div>
 
 						<div className='features-icons'>
@@ -170,7 +242,12 @@ const [load, setLoad] = React.useState(true);
 							<div className='tab active-tab' id='tab2'>
 								<div className='row'>
 									{load ? (
-										<div style = {{display : 'flex', justifyContent : 'center', alignItems : 'center'}} >
+										<div
+											style={{
+												display: "flex",
+												justifyContent: "center",
+												alignItems: "center",
+											}}>
 											{" "}
 											<ClipLoader size={30} />
 										</div>
@@ -257,12 +334,17 @@ const [load, setLoad] = React.useState(true);
 					</div>
 
 					<div class='carousel-outer wow fadeInUp'>
-          		{load ? (
-										<div style = {{display : 'flex', justifyContent : 'center', alignItems : 'center'}} >
-											{" "}
-											<ClipLoader size={30} />
-										</div>
-									) : null}
+						{load ? (
+							<div
+								style={{
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+								}}>
+								{" "}
+								<ClipLoader size={30} />
+							</div>
+						) : null}
 						<div
 							style={{
 								display: "flex",
@@ -270,31 +352,35 @@ const [load, setLoad] = React.useState(true);
 								justifyContent: "center",
 							}}
 							class=''>
-              
 							{data?.map((props) => (
 								<>
 									{props?.isDeveloper ? (
-										<div style={{ width: "250px" }} class='candidate-block'>
-											<div class='inner-box'>
-												<figure class='image'>
-													<img
-														style={{ height: "100%", objectFit: "cover" }}
-														src={props?.avatar}
-														alt=''
-													/>
-												</figure>
-												<h4 class='name'>{props?.name}</h4>
-												<span class='designation'>{props?.jobTitle}</span>
-												<div class='location'>
-													<i class='flaticon-map-locator'></i> {props?.location}
+										<>
+											{props?._id === current?._id ? null : (
+												<div style={{ width: "250px" }} class='candidate-block'>
+													<div class='inner-box'>
+														<figure class='image'>
+															<img
+																style={{ height: "100%", objectFit: "cover" }}
+																src={props?.avatar}
+																alt=''
+															/>
+														</figure>
+														<h4 class='name'>{props?.name}</h4>
+														<span class='designation'>{props?.jobTitle}</span>
+														<div class='location'>
+															<i class='flaticon-map-locator'></i>{" "}
+															{props?.location}
+														</div>
+														<a
+															href={`/${props?._id}/profile`}
+															class='theme-btn btn-style-one'>
+															<span class='btn-title'>View Profile</span>
+														</a>
+													</div>
 												</div>
-												<a
-													href={`/${props?._id}/profile`}
-													class='theme-btn btn-style-one'>
-													<span class='btn-title'>View Profile</span>
-												</a>
-											</div>
-										</div>
+											)}
+										</>
 									) : null}
 								</>
 							))}
@@ -729,6 +815,6 @@ const [load, setLoad] = React.useState(true);
 			<Footer />
 		</div>
 	);
-}
+};
 
-export default HomeScreen
+export default HomeScreen;

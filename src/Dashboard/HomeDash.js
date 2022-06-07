@@ -1,49 +1,61 @@
-import axios from 'axios'
-import React, { useContext } from 'react'
-import { GlobalContext } from '../Components/Global/GlobalContext'
+import axios from "axios";
+import React, { useContext } from "react";
+import { GlobalContext } from "../Components/Global/GlobalContext";
 import ClipLoader from "react-spinners/ClipLoader";
+import { Link } from "react-router-dom";
+import DefineUser from "./DefineUser";
 const HomeDash = () => {
-    const {current} = useContext(GlobalContext)
- 
-    const myId = current?._id
-    console.log("weh", current)
+	const { current } = useContext(GlobalContext);
 
-     const [load, setLoad] = React.useState(true);
-     const [data, setData] = React.useState([]);
-     const[mani, setMani] = React.useState([])
+	const myId = current?._id;
+	console.log("weh", current);
 
-			const getUser = async () => {
-				const res = await axios
-					.get(`https://qlinkappi.herokuapp.com/api/user/${myId}`)
-					.then((response) => {
-						console.log("my wounsdfh", response);
-						setData(response?.data?.data);
-						setLoad(false);
-					});
-			};
-			const getUserJob = async () => {
-				const res = await axios
-					.get("https://qlinkappi.herokuapp.com/api/jobs/alljobs")
-					.then((response) => {
-						console.log("myhdfhjdfjf jobs", response);
-						setMani(response?.data);
-					});
-			};
+	const [load, setLoad] = React.useState(true);
+	const [data, setData] = React.useState([]);
+	const [dataApply, setDataApply] = React.useState([]);
+	const [mani, setMani] = React.useState([]);
 
-			React.useEffect(() => {
-				getUser();
-				console.log("my data hmmbvn", data);
-				console.log("am getting all jobs", mani);
-        getUserJob()
-			}, [myId]);
+	const getUser = async () => {
+		const res = await axios
+			.get(`https://qlinkappi.herokuapp.com/api/user/${myId}`)
+			.then((response) => {
+				console.log("my wounsdfh", response);
+				setData(response?.data?.data);
+				setLoad(false);
+			});
+	};
+	const getUserJob = async () => {
+		const res = await axios
+			.get("https://qlinkappi.herokuapp.com/api/jobs/alljobs")
+			.then((response) => {
+				console.log("myhdfhjdfjf jobs", response);
+				setMani(response?.data);
+			});
+	};
 
+	const getAllApplied = async () => {
+		const res = await axios.get(
+			`https://qlinkappi.herokuapp.com/api/jobs/apply`,
+		);
+		setDataApply(res?.data);
 
-  return (
+		console.log("single job", res);
+	};
+
+	React.useEffect(() => {
+		getUser();
+		console.log("my data hmmbvn", data);
+		console.log("am getting all jobs", mani);
+		getAllApplied();
+		getUserJob();
+	}, [myId]);
+
+	return (
 		<section style={{ marginTop: "100px" }} class='user-dashboard'>
 			<div class='dashboard-outer'>
 				<div class='upper-title-box'>
 					{load ? (
-						<div style={{  }}>
+						<div style={{}}>
 							{" "}
 							<ClipLoader size={30} />
 						</div>
@@ -69,7 +81,7 @@ const HomeDash = () => {
 								<i class='icon la la-file-invoice'></i>
 							</div>
 							<div class='right'>
-								<h4>0</h4>
+								<h4>{mani?.length}</h4>
 								<p>Job Alerts</p>
 							</div>
 						</div>
@@ -128,6 +140,13 @@ const HomeDash = () => {
 								<h4>Notifications</h4>
 							</div>
 
+							{load ? (
+								<div style={{ marginLeft: "10px" }}>
+									{" "}
+									<ClipLoader size={30} />
+								</div>
+							) : null}
+
 							<div class='widget-content'>
 								{mani?.map((props) => (
 									<>
@@ -160,39 +179,55 @@ const HomeDash = () => {
 							<div class='widget-title'>
 								<h4> Recently Applicants</h4>
 							</div>
-							{mani?.applied?.map((props) => (
-								<div class='widget-content'>
-									<div class='row'>
-										<div>{props?.name}</div>
-										{/* <div class="job-block col-lg-6 col-md-12 col-sm-12">
-                    <div class="inner-box">
-                      <div class="content">
-                        <span class="company-logo"><img src="images/resource/company-logo/1-1.png" alt=""/></span>
-                        <h4><a href="#">Software Engineer (Android), Libraries</a></h4>
-                        <ul class="job-info">
-                          <li><span class="icon flaticon-briefcase"></span> Segment</li>
-                          <li><span class="icon flaticon-map-locator"></span> London, UK</li>
-                          <li><span class="icon flaticon-clock-3"></span> 11 hours ago</li>
-                          <li><span class="icon flaticon-money"></span> $35k - $45k</li>
-                        </ul>
-                        <ul class="job-other-info">
-                          <li class="time">Full Time</li>
-                          <li class="privacy">Private</li>
-                          <li class="required">Urgent</li>
-                        </ul>
-                        <button class="bookmark-btn"><span class="flaticon-bookmark"></span></button>
-                      </div>
-                    </div>
-                  </div> */}
-									</div>
+							{load ? (
+								<div style={{ marginLeft: "10px" }}>
+									{" "}
+									<ClipLoader size={30} />
 								</div>
-							))}
+							) : null}
+							<div class='widget-content'>
+								<div class='row'>
+									{mani?.map(({ user, applied, jobTitle }) => (
+										<>
+											{user === current?._id ? (
+												<>
+													<div style={{ fontWeight: "bold" }}>{jobTitle}</div>
+													{applied?.map((props) => (
+														<div class='candidate-block-three col-lg-6 col-md-12 col-sm-12'>
+															<div class='inner-box'>
+																<div class='content'>
+																	<DefineUser id={props?.userId} />
+																	<div style={{ fontWeight: "bold" }}>
+																		Application letter
+																	</div>
+																	<p>{props?.applicationletter}</p>
+																	<a href={props?.userCv}>
+																		<div
+																			style={{
+																				width: "200px",
+																			}}>
+																			<div style={{ width: "100%" }}>
+																				{" "}
+																				View Cv
+																			</div>
+																		</div>
+																	</a>
+																</div>
+															</div>
+														</div>
+													))}
+												</>
+											) : null}
+										</>
+									))}
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</section>
 	);
-}
+};
 
-export default HomeDash
+export default HomeDash;

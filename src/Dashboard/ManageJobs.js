@@ -13,7 +13,7 @@ const myId = current?._id
 
 	const getUser = async () => {
 		const res = await axios
-			.get(`https://newqlinksbackapi.vercel.app/api/user/${myId}`)
+			.get(`https://qlinkappi.herokuapp.com/api/user/${myId}`)
 			.then((response) => {
 				console.log("see me ooo", response);
 				setData(response?.data?.data);

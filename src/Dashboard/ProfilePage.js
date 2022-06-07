@@ -1,152 +1,179 @@
-import axios from 'axios'
-import React, { useContext } from 'react'
-import { GlobalContext } from '../Components/Global/GlobalContext'
-import DashHeader from './DashHeader'
-import swal from 'sweetalert'
-import { useNavigate } from 'react-router-dom'
-import Loading from '../Components/LoadState'
+import axios from "axios";
+import React, { useContext, useState } from "react";
+import { GlobalContext } from "../Components/Global/GlobalContext";
+import DashHeader from "./DashHeader";
+import swal from "sweetalert";
+import { useNavigate } from "react-router-dom";
+import { db, storage, auth } from "../base";
+import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
+import Stack from "@mui/material/Stack";
+import CircularProgress from "@mui/material/CircularProgress";
+import LinearProgress from "@mui/material/LinearProgress";
+import {
+	getStorage,
+	ref,
+	uploadBytesResumable,
+	getDownloadURL,
+} from "firebase/storage";
+import Loading from "../Components/LoadState";
 const ProfilePage = () => {
-  const {current} = useContext(GlobalContext)
-const hist = useNavigate()
+	const { current } = useContext(GlobalContext);
+	const hist = useNavigate();
 
-const myId = current?._id
+	const myId = current?._id;
 
-  const [name, setName] = React.useState()
-  const [email, setEmail] = React.useState()
-  const [avatar, setAvatar] = React.useState('')
-  const [jobTitle, setJobTitle] = React.useState()
-  const [salary, setSalary] = React.useState()
-  const [age, setAge] = React.useState()
-  const [experience, setExperience] = React.useState()
-  const [websiteUrl, setWebsiteUrl] = React.useState()
-  const [description, setDescription] = React.useState()
-  const [gender, setGender] = React.useState()
-  const [location, setLocation] = React.useState()
-  const [phoneNumber, setPhoneNumber] = React.useState()
-  const [loading, setLoading] = React.useState(false)
-  const [prevUrl, setPrevUrl] = React.useState("")
-  const toggleLoad = ()=>{
-        setLoading(true)
-    }
+	const [name, setName] = React.useState();
+	const [email, setEmail] = React.useState();
+	const [avatar, setAvatar] = React.useState("");
+	const [jobTitle, setJobTitle] = React.useState();
+	const [salary, setSalary] = React.useState();
+	const [age, setAge] = React.useState();
+	const [experience, setExperience] = React.useState();
+	const [websiteUrl, setWebsiteUrl] = React.useState();
+	const [description, setDescription] = React.useState();
+	const [gender, setGender] = React.useState();
+	const [location, setLocation] = React.useState();
+	const [phoneNumber, setPhoneNumber] = React.useState();
+	const [loading, setLoading] = React.useState(false);
+	const [prevUrl, setPrevUrl] = React.useState("");
+	const [image, setImage] = useState();
+	const [cv, setCv] = React.useState("");
+	const [percentage, setPercentage] = useState(0.00001);
 
+	const toggleLoad = () => {
+		setLoading(true);
+	};
 
+	const handleImage = async (e) => {
+		const file = e.target.files[0];
+		const save = URL.createObjectURL(file);
+		setImage(save);
 
-  const postData = async()=>{
+		const storageRef = ref(storage, "userAvatar/" + file.name);
+		const uploadTask = uploadBytesResumable(storageRef, file);
+		uploadTask.on(
+			"state_changed",
+			(snapshot) => {
+				const progress =
+					(snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+				console.log("Upload is " + progress + "% done");
+				setPercentage(progress);
+			},
+			(error) => {
+				console.log(error.message);
+			},
+			() => {
+				getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+					console.log("File available at", downloadURL);
+					setCv(downloadURL);
+					console.log("This is the Avatar: ", avatar);
+				});
+			},
+		);
+	};
 
-       await axios
-					.patch(
-						`https://qlinkappi.herokuapp.com/api/user/editprofile/${myId}`,
-						{
-							name,
-							jobTitle,
-							email,
-							salary,
-							age,
-							experience,
-							websiteUrl,
-							description,
-							gender,
-							location,
-							phoneNumber,
-						},
-					)
-					.then((response) => {
-						// console.log("update",response?.data.data)
-						// edit profile from localstorage
-						// const profile = JSON.parse(localStorage.getItem("dataUsers"));
-						// Object.keys(response?.data?.data).forEach((key) => {
-						// 	profile[key] = response?.data?.data[key];
-						// });
-						// localStorage.setItem("dataUsers", JSON.stringify(profile));
-						swal({
-							title: " Successfull",
-							text: "Your Profile Has been Updated!",
-							icon: "success",
-							button: "ok",
-						}).then((value) => {
-							swal(window.location.reload());
-						});
-						setLoading(false);
-					});
-       
-   
-    
-  }
+	const postData = async () => {
+		await axios
+			.patch(`https://qlinkappi.herokuapp.com/api/user/editprofile/${myId}`, {
+				name,
+				jobTitle,
+				email,
+				salary,
+				age,
+				experience,
+				websiteUrl,
+				description,
+				gender,
+				location,
+				phoneNumber,
+				cv: cv,
+			})
+			.then((response) => {
+				// console.log("update",response?.data.data)
+				// edit profile from localstorage
+				// const profile = JSON.parse(localStorage.getItem("dataUsers"));
+				// Object.keys(response?.data?.data).forEach((key) => {
+				// 	profile[key] = response?.data?.data[key];
+				// });
+				// localStorage.setItem("dataUsers", JSON.stringify(profile));
+				swal({
+					title: " Successfull",
+					text: "Your Profile Has been Updated!",
+					icon: "success",
+					button: "ok",
+				}).then((value) => {
+					swal(window.location.reload());
+				});
+				setLoading(false);
+			});
+	};
 
+	const [data, setData] = React.useState([]);
 
-     const [data, setData] = React.useState([]);
-		
+	const getUser = async () => {
+		const res = await axios
+			.get(`https://qlinkappi.herokuapp.com/api/user/${myId}`)
+			.then((response) => {
+				console.log("hdjfkkdeuhjfjjf", response?.data?.data);
+				setData(response?.data?.data);
+			});
+	};
 
-			const getUser = async () => {
-				const res = await axios
-					.get(`https://qlinkappi.herokuapp.com/api/user/${myId}`)
-					.then((response) => {
-						console.log("hdjfkkdeuhjfjjf", response?.data?.data);
-						setData(response?.data?.data);
-					});
-			};
+	const imageOnchange = (e) => {
+		const file = e.target.files[0];
+		const saveUrl = URL.createObjectURL(file);
 
+		setAvatar(file);
+		setPrevUrl(saveUrl);
+		console.log(file);
+	};
 
+	React.useEffect(() => {
+		getUser();
+		console.log("my data oooogg", data);
+	}, [myId]);
 
-      const imageOnchange = (e)=>{
-        const file = e.target.files[0]
-        const saveUrl = URL.createObjectURL(file)
+	
 
-        setAvatar(file)
-        setPrevUrl(saveUrl)
-        console.log(file)
-      }
+	const ChangeImageProfile = async () => {
+		const config = {
+			headers: {
+				"content-type": "multipart/formdata",
+			},
+		};
 
-			React.useEffect(() => {
-				getUser();
-				console.log("my data oooogg", data);
-			}, [myId]);
+		const formdata = new FormData();
 
+		formdata.append("avatar", avatar);
 
-  const ChangeImageProfile = async() => {
+		await axios
+			.patch(
+				`https://qlinkappi.herokuapp.com/api/user/${myId}/edituserAvatar`,
+				formdata,
+				config,
+			)
+			.then((response) => {
+				setLoading(false);
+				window.location.reload();
+				// console.log("update",response?.data.data)
+				// edit profile from localstorage
+				const profile = JSON.parse(localStorage.getItem("dataUsers"));
+				Object.keys(response?.data?.data).forEach((key) => {
+					profile[key] = response?.data?.data[key];
+				});
+				localStorage.setItem("dataUsers", JSON.stringify(profile));
+				swal({
+					title: " Successfull",
+					text: "Your Profile Has been Updated!",
+					icon: "success",
+					button: "ok",
+				}).then((value) => {
+					swal(window.location.reload());
+				});
+			});
+	};
 
-    const config = {
-       headers : {
-         "content-type" : "multipart/formdata"
-       }
-    }
-
-    const formdata = new FormData()
-
-    formdata.append("avatar", avatar)
- 
-       await axios
-					.patch(
-						`https://qlinkappi.herokuapp.com/api/user/${myId}/edituserAvatar`,
-					 formdata,config
-					)
-					.then((response) => {
-							setLoading(false);
-						window.location.reload()
-						// console.log("update",response?.data.data)
-						// edit profile from localstorage
-						const profile = JSON.parse(localStorage.getItem("dataUsers"));
-						Object.keys(response?.data?.data).forEach((key) => {
-							profile[key] = response?.data?.data[key];
-						});
-						localStorage.setItem("dataUsers", JSON.stringify(profile));
-						swal({
-							title: " Successfull",
-							text: "Your Profile Has been Updated!",
-							icon: "success",
-							button: "ok",
-						}).then((value) => {
-							swal(window.location.reload());
-						});
-					
-					});
-}
-
-
-
-
-
-  return (
+	return (
 		<div className='page-wrapper dashboard'>
 			<DashHeader />
 			<section style={{ marginTop: "100px" }} class='user-dashboard'>
@@ -212,7 +239,6 @@ const myId = current?._id
 																<button
 																	onClick={() => {
 																		setAvatar(null);
-																	
 																	}}
 																	style={{ background: "red" }}
 																	type='submit'
@@ -223,7 +249,6 @@ const myId = current?._id
 															<div style={{ marginTop: "10px" }} class=''>
 																<button
 																	onClick={() => {
-																	
 																		toggleLoad();
 																	}}
 																	type='submit'
@@ -393,6 +418,31 @@ const myId = current?._id
 														<option>Female</option>
 													</select>
 												</div>
+												<div class='form-group col-lg-6 col-md-12'>
+													<label>Upload CV</label>
+													<input
+														class='uploadButton-input'
+														type='file'
+														id='upload'
+														placeholder='Upload CV'
+														onChange={handleImage}
+														required
+													/>
+												</div>
+
+												{image ? (
+													<>
+														{percentage > 0 && percentage < 99 ? (
+															<div style={{ width: "300px" }}>
+																<LinearProgress
+																	value={Math.floor(percentage)}
+																	variant='determinate'
+																/>
+																{Math.floor(percentage)}%
+															</div>
+														) : null}
+													</>
+												) : null}
 
 												{/* <div class="form-group col-lg-6 col-md-12">
                         <label>Allow In Search & Listing</label>
@@ -550,6 +600,6 @@ const myId = current?._id
 			</section>
 		</div>
 	);
-}
+};
 
-export default ProfilePage
+export default ProfilePage;

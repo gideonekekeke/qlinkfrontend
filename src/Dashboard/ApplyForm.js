@@ -1,163 +1,159 @@
-import axios from 'axios'
-import React from 'react'
-import { useParams } from 'react-router-dom'
-import swal from 'sweetalert'
-import Loading from '../Components/LoadState'
-import DashHeader from './DashHeader'
+import axios from "axios";
+import React, { useContext } from "react";
+import { useParams } from "react-router-dom";
+import swal from "sweetalert";
+import Loading from "../Components/LoadState";
+import DashHeader from "./DashHeader";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 
 import * as yup from "yup";
-
+import { GlobalContext } from "../Components/Global/GlobalContext";
 
 const ApplyForm = () => {
-const {id} = useParams()
+	const { current } = useContext(GlobalContext);
+	const { id } = useParams();
 
-const useID = id;
+	const useID = id;
 
+	const [image, setImage] = React.useState("");
+	const [loading, setLoading] = React.useState(false);
 
-const [image, setImage] = React.useState('')
-const[loading, setLoading] = React.useState(false)
+	const [avatar, setAvatar] = React.useState("");
+	const [userID, setUserID] = React.useState("3765364773");
+	const [data, setData] = React.useState([]);
+	const [dataApply, setDataApply] = React.useState([]);
 
-const [avatar, setAvatar] = React.useState('')
-const [userID, setUserID] = React.useState('3765364773')
+	const [name, setName] = React.useState();
+	const [email, setEmail] = React.useState();
+	const [userCv, setUserCv] = React.useState();
+	const [applicationletter, setApplicationLetter] = React.useState();
 
-const onPreview = (e)=>{
-const file = e.target.files[0]
-const checkPreview = URL.createObjectURL(file)
-setAvatar(file)
-console.log(avatar)
-setImage(file);
-
-}
-
- const proModel = yup.object().shape({
+	const proModel = yup.object().shape({
 		name: yup.string().required("field must not be empty"),
 		email: yup.string().required("field must not be empty"),
-		location: yup.string().required("field must not be empty"),
-		experience: yup.string().required("field must not be empty"),
-		phoneNumber: yup.string().required("field must not be empty"),
-	
+		userCv: yup.string().required("field must not be empty"),
+		applicationletter: yup.string().required("field must not be empty"),
+
 		// password:yup.string().required("password needed").min(6),
 		// confirmpassword:yup.string().oneOf([yup.ref('password'), null])
- });
+	});
 
- 
-   const {
-			register,
-			handleSubmit,
-			formState: { errors },
-		} = useForm({
-			resolver: yupResolver(proModel),
-		});
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm({
+		resolver: yupResolver(proModel),
+	});
 
-		  const submit = handleSubmit(async (data) => {
-				console.log("testing value", data);
-				console.log("image state", image);
-				const { name, email, location, phoneNumber, experience } = data;
+	const dataV = {
+		name: current?.name,
+		email: current?.email,
+		userCv: current?.cv,
+		applicationletter,
+		userId: current?._id,
+	};
 
-				const formdata = new FormData();
+	const submit = async () => {
+		// console.log("testing value", data);
 
-				formdata.append("name", name);
-				formdata.append("email", email);
-				formdata.append("location", location);
-				formdata.append("experience", experience);
-				formdata.append("phoneNumber", phoneNumber);
-				formdata.append("image", image);
-				//   formdata.append("userID", userID);
+		// const { name, email, userCv, applicationletter } = data;
 
-				const config = {
-					headers: {
-						"content-type": "multipart/formdata",
-					},
-				};
+		//   formdata.append("userID", userID);
 
-				await axios
-					.post(
-						`https://qlinkappi.herokuapp.com/api/jobs/${id}/apply`,
-						formdata,
-						config,
-					)
-					.then((response) => {
-						
-							swal({
-								title: "Applied successfully!",
-								text: "You have successfully applied for this job",
-								icon: "success",
-								button: "ok",
-							}).then(()=>{
-								window.location.reload()
-							})
-							setLoading(false);
-				
-					})
-					.catch((error) => {
-						swal({
-							title: "An Error occured",
-							text: "You can clicked the button!",
-							icon: "error",
-							button: "ok",
-						});
-						setLoading(false);
-					});
+		if (!current?.cv) {
+			swal({
+				title: "Please Go to your Profile and Upload your cv",
+				text: "You can clicked the button!",
+				icon: "error",
+				button: "ok",
 			});
+			setLoading(false);
+		} else {
+			await axios
+				.post(`https://qlinkappi.herokuapp.com/api/jobs/${id}/apply`, dataV)
+				.then((response) => {
+					swal({
+						title: "Applied successfully!",
+						text: "You have successfully applied for this job",
+						icon: "success",
+						button: "ok",
+					}).then(() => {
+						window.location.reload();
+					});
+					setLoading(false);
+				})
+				.catch((error) => {
+					swal({
+						title: "An Error occured",
+						text: "You can clicked the button!",
+						icon: "error",
+						button: "ok",
+					});
+					setLoading(false);
+				});
+		}
+	};
 
-const toggleLoad = ()=>{
-  setLoading(true)
-}
+	const toggleLoad = () => {
+		setLoading(true);
+	};
 
-const uploadForm = async()=>{
+	const getSingleJob = async () => {
+		const res = await axios.get(
+			`https://qlinkappi.herokuapp.com/api/jobs/${id}/${id}/singlejob`,
+		);
+		setData(res?.data?.data);
 
-//   const formdata = new FormData()
-
-//   formdata.append("name", name)
-//   formdata.append("email", email)
-//   formdata.append("location", location)
-//   formdata.append("experience", experience);
-//   formdata.append("phoneNumber", phoneNumber);
-//   formdata.append("image", image);
-//   formdata.append("userID", userID);
-
-
- 
+		console.log("single job", res);
+	};
 	
+	const uploadForm = async () => {
+		//   const formdata = new FormData()
+		//   formdata.append("name", name)
+		//   formdata.append("email", email)
+		//   formdata.append("location", location)
+		//   formdata.append("experience", experience);
+		//   formdata.append("phoneNumber", phoneNumber);
+		//   formdata.append("image", image);
+		//   formdata.append("userID", userID);
+		// const url = `http://localhost:4444/api/content/${id}/createContent`;
+		// const url = `localhost:5050/api/product/${id}/add`;
+		// await axios
+		// 	.post(
+		// 		`https://qlinkappi.herokuapp.com/api/jobs/${id}/apply`,
+		// 		formdata,
+		// 		config,
+		// 	)
+		// 	.then((response) => {
+		// 		if (response === 201) {
+		// 			swal({
+		// 				title: "uploaded successful!",
+		// 				text: "You can clicked the button!",
+		// 				icon: "success",
+		// 				button: "ok",
+		// 			});
+		// 			setLoading(false);
+		// 		}
+		// 	})
+		// 	.catch((error) => {
+		// 		swal({
+		// 			title: "An Error occured",
+		// 			text: "You can clicked the button!",
+		// 			icon: "error",
+		// 			button: "ok",
+		// 		});
+		// 		setLoading(false);
+		// 	});
+	};
 
-			// const url = `http://localhost:4444/api/content/${id}/createContent`;
-			// const url = `localhost:5050/api/product/${id}/add`;
+	React.useEffect(() => {
+		getSingleJob();
+	
+	}, []);
 
-			// await axios
-			// 	.post(
-			// 		`https://qlinkappi.herokuapp.com/api/jobs/${id}/apply`,
-			// 		formdata,
-			// 		config,
-			// 	)
-			// 	.then((response) => {
-			// 		if (response === 201) {
-			// 			swal({
-			// 				title: "uploaded successful!",
-			// 				text: "You can clicked the button!",
-			// 				icon: "success",
-			// 				button: "ok",
-			// 			});
-			// 			setLoading(false);
-			// 		}
-			// 	})
-			// 	.catch((error) => {
-			// 		swal({
-			// 			title: "An Error occured",
-			// 			text: "You can clicked the button!",
-			// 			icon: "error",
-			// 			button: "ok",
-			// 		});
-			// 		setLoading(false);
-			// 	});
-  
-}
-
-
-
-
-  return (
+	return (
 		<div className='page-wrapper dashboard'>
 			<DashHeader />
 			<section style={{ marginTop: "100px" }} class='user-dashboard'>
@@ -176,62 +172,37 @@ const uploadForm = async()=>{
 									</div>
 
 									<div class='widget-content'>
-										<div class='uploading-outer'>
-											<div class='uploadButton'>
-												<input
-													onChange={onPreview}
-													class='uploadButton-input'
-													type='file'
-													id='upload'
-												/>
-												<label
-													class='uploadButton-button ripple-effect'
-													for='upload'></label>
-												Upload your Cv
-												<span class='uploadButton-file-name'></span>
-											</div>
-											{avatar ? (
-												<div class='text'>{avatar?.name}</div>
-											) : (
-												<div class='text'>
-													Max file size is 1MB, Minimum dimension: 330x300 And
-													Suitable files are .jpg & .png
-												</div>
-											)}
-										</div>
-
 										<form
 											onSubmit={(e) => {
 												e.preventDefault();
-
-												
+												toggleLoad();
+												submit();
 											}}
 											class='default-form'>
 											<div class='row'>
 												<div class='form-group col-lg-6 col-md-12'>
 													<label>Full Name</label>
 													<input
-														{...register("name")}
+														onChange={(e) => {
+															setName(e.target.value);
+														}}
 														type='text'
 														placeholder='Jerome'
+														defaultValue={current?.name}
+														value={current?.name}
 													/>
 												</div>
 
 												<div class='form-group col-lg-6 col-md-12'>
 													<label>Email</label>
 													<input
-														{...register("email")}
+														value={current?.email}
+														onChange={(e) => {
+															setEmail(e.target.value);
+														}}
 														type='text'
 														placeholder='email@gmail.com'
-													/>
-												</div>
-
-												<div class='form-group col-lg-6 col-md-12'>
-													<label>Phone</label>
-													<input
-														{...register("phoneNumber")}
-														type='text'
-														placeholder='0 123 456 7890'
+														defaultValue={current?.email}
 													/>
 												</div>
 
@@ -241,35 +212,69 @@ const uploadForm = async()=>{
                       </div> */}
 
 												<div class='form-group col-lg-6 col-md-12'>
-													<label>Experience</label>
+													<label>cv Uploaded</label>
 													<input
-														{...register("experience")}
+														onChange={(e) => {
+															setUserCv(e.target.value);
+														}}
 														type='text'
-														placeholder='5-10 Years'
+														defaultValue={current?.cv}
+														value={current?.cv}
 													/>
 												</div>
 
 												<div class='form-group col-lg-12 col-md-12'>
-													<label>Location</label>
-													<input
-														{...register("location")}
-														type='text'
-														placeholder='Certificate'
-													/>
+													<label>Application Letter</label>
+													<textarea
+														onChange={(e) => {
+															setApplicationLetter(e.target.value);
+														}}
+														placeholder='type your application letter here...'></textarea>
 												</div>
 
-												<div class='form-group col-lg-6 col-md-12'>
-													<button
-														onClick={()=>{
-															toggleLoad();
-															submit()
-														}}
-														class='theme-btn btn-style-one'>
-														Submit
-													</button>
-												</div>
+												{data?.applied?.find(
+													(el) =>
+														el?.userId === current?._id && el?.userApply === id,
+												) ? (
+													<div class='form-group col-lg-6 col-md-12'>
+														<button disabled  style = {{cursor : "not-allowed", background : 'silver'}} class='theme-btn btn-style-one'>
+															Already Applied
+														</button>
+													</div>
+												) : (
+													<div class='form-group col-lg-6 col-md-12'>
+														<button class='theme-btn btn-style-one'>
+															Apply Now
+														</button>
+													</div>
+												)}
 											</div>
 										</form>
+										<h4 style={{ fontWeight: "bold" }}>{data?.jobTitle}</h4>
+
+										<br />
+										<h5 style={{ fontWeight: "bold" }}>Job Description</h5>
+										<br />
+										<p>
+											Be involved in every step of the product design cycle from
+											discovery to developer handoff and user acceptance
+											testing. Work with BAs, product managers and tech teams to
+											lead the Product Design Maintain quality of the design
+											process and ensure that when designs are translated into
+											code they accurately reflect the design specifications.
+											Accurately estimate design tickets during planning
+											sessions. Contribute to sketching sessions involving
+											non-designersCreate, iterate and maintain UI deliverables
+											including sketch files, style guides, high fidelity
+											prototypes, micro interaction specifications and pattern
+											libraries. Ensure design choices are data led by
+											identifying assumptions to test each sprint, and work with
+											the analysts in your team to plan moderated usability test
+											sessions. Design pixel perfect responsive UI’s and
+											understand that adopting common interface patterns is
+											better for UX than reinventing the wheel Present your work
+											to the wider business at Show & Tell sessions.
+										</p>
 										{loading ? <Loading loading={loading} /> : null}
 									</div>
 								</div>
@@ -403,6 +408,6 @@ const uploadForm = async()=>{
 			</section>
 		</div>
 	);
-}
+};
 
-export default ApplyForm
+export default ApplyForm;

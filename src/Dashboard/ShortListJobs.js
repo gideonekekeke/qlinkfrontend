@@ -8,7 +8,7 @@ const ShortListJobs = () => {
 
 			const getUser = async () => {
 				const res = await axios
-					.get("https://newqlinksbackapi.vercel.app/api/jobs/alljobs")
+					.get("https://qlinkappi.herokuapp.com/api/jobs/alljobs")
 					.then((response) => {
 						console.log("my main now", response);
 						setData(response?.data);
