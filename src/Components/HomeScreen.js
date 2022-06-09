@@ -8,6 +8,7 @@ import { GlobalContext } from "./Global/GlobalContext";
 import Header from "./Header";
 import Footer from "./Footer";
 import { useSelector } from "react-redux";
+import { AiFillStar } from "react-icons/ai";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -16,6 +17,7 @@ import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Loading from "./LoadState";
+import Radium, { StyleRoot } from "radium";
 
 const HomeScreen = () => {
 	const [data, setData] = React.useState([]);
@@ -28,7 +30,7 @@ const HomeScreen = () => {
 		setShowResult,
 		dloading,
 		setDloading,
-		current
+		current,
 	} = useContext(GlobalContext);
 
 	const toggleLoading = () => {
@@ -48,6 +50,13 @@ const HomeScreen = () => {
 	} = useForm({
 		resolver: yupResolver(userModel),
 	});
+
+	const style = {
+		// Adding media query..
+		"@media (max-width: 700px)": {
+			display: "none",
+		},
+	};
 
 	const submit = handleSubmit(async (data) => {
 		console.log(data);
@@ -87,7 +96,7 @@ const HomeScreen = () => {
 	const [load, setLoad] = React.useState(true);
 	const getUser = async () => {
 		const res = await axios
-			.get(`https://qlinkappi.herokuapp.com/api/user?limit=${6}`)
+			.get(`https://qlinkappi.herokuapp.com/api/user?limit=${5}`)
 			.then((response) => {
 				console.log("my wounsdfh", response);
 				setData(response?.data?.data);
@@ -118,13 +127,16 @@ const HomeScreen = () => {
 
 			<div class='preloader'></div>
 
-			<section
-				className='banner-section-four -type-16'
-				style={{ backgroundImage: "url(images/index-16/header/3.png)" }}>
+			<section className='banner-section-four -type-16'>
 				<div className='auto-container'>
 					<div className='content-box'>
 						<div className='title-box wow fadeInUp' data-wow-delay='500ms'>
-							<h3 style={{ fontFamily: "poppins" }}>Find The Best Job</h3>
+							<h3 style={{ fontFamily: "poppins" }}>
+							  Software Developer's Marketplace
+							</h3>
+							<div className='bolding_text'>
+								Join the World's Software Developer Marketplace
+							</div>
 							<p style={{ fontFamily: "poppins" }}>
 								Millions of people use QLink to turn their ideas into reality.
 							</p>
@@ -152,7 +164,12 @@ const HomeScreen = () => {
 										/>
 									</div>
 									<div className='form-group col-auto'>
-										<button type='submit' className='theme-btn btn-style-two'>
+										<button
+											style={{
+												background: "#2DD4B8",
+											}}
+											type='submit'
+											className='theme-btn btn-style-two'>
 											Find Jobs
 										</button>
 									</div>
@@ -229,7 +246,13 @@ const HomeScreen = () => {
 								<li className='tab-btn' data-tab='#tab1'>
 									Feature
 								</li>
-								<li className='tab-btn active-btn' data-tab='#tab2'>
+								<li
+									style={{
+										background:
+											"linear-gradient(90deg, rgba(34,210,180,1) 0%, rgba(29,174,155,1) 46%, rgba(52,117,106,1) 91%)",
+									}}
+									className='tab-btn active-btn'
+									data-tab='#tab2'>
 									Urgent{" "}
 								</li>
 								<li className='tab-btn' data-tab='#tab3'>
@@ -254,39 +277,41 @@ const HomeScreen = () => {
 									) : null}
 									{dataV?.map((props) => (
 										<div className='job-block col-lg-4 col-md-6 col-sm-12'>
-											<div className='inner-box'>
-												<div className='content'>
-													<span className='company-logo'>
-														<img
-															className='rounded-full'
-															src='images/resource/company-logo/lu1.png'
-															alt=''
-														/>
-													</span>
-													<h4>
-														<a href={`/${props?._id}/findjobDetail`}>
-															{props?.jobTitle}
-														</a>
-													</h4>
-													<ul className='job-info'>
-														<li>
-															<span className='icon flaticon-briefcase'></span>{" "}
-															{props?.budget}
-														</li>
-														<li>
-															<span className='icon flaticon-map-locator'></span>{" "}
-															{props?.location}
-														</li>
-													</ul>
-													<ul className='job-other-info'>
-														<li className='required'>Urgent</li>
-														<li className='time'>{props?.selectTime}</li>
-													</ul>
-													<button className='bookmark-btn'>
-														<span className='flaticon-bookmark'></span>
-													</button>
+											<StyleRoot>
+												<div className='inner-box'>
+													<div className='content'>
+														<span className='company-logo'>
+															<img
+																className='rounded-full'
+																src='images/resource/company-logo/lu1.png'
+																alt=''
+															/>
+														</span>
+														<h4>
+															<a href={`/${props?._id}/findjobDetail`}>
+																{props?.jobTitle}
+															</a>
+														</h4>
+														<ul className='job-info'>
+															<li>
+																<span className='icon flaticon-briefcase'></span>{" "}
+																{props?.budget}
+															</li>
+															<li>
+																<span className='icon flaticon-map-locator'></span>{" "}
+																{props?.location}
+															</li>
+														</ul>
+														<ul className='job-other-info'>
+															<li className='required'>Urgent</li>
+															<li className='time'>{props?.selectTime}</li>
+														</ul>
+														<button className='bookmark-btn'>
+															<span className='flaticon-bookmark'></span>
+														</button>
+													</div>
 												</div>
-											</div>
+											</StyleRoot>
 										</div>
 									))}
 								</div>
@@ -305,8 +330,8 @@ const HomeScreen = () => {
 							style={{
 								height: "50px",
 								width: "200px",
-								border: "1px solid #4182E8",
-								color: "#4182E8",
+								border: "1px solid #22D2B4",
+								color: "#22D2B4",
 								fontWeight: "bold",
 								borderRadius: "20px",
 							}}>
@@ -355,32 +380,45 @@ const HomeScreen = () => {
 							{data?.map((props) => (
 								<>
 									{props?.isDeveloper ? (
-										<>
+										<div className='CardHold'>
 											{props?._id === current?._id ? null : (
-												<div style={{ width: "250px" }} class='candidate-block'>
-													<div class='inner-box'>
-														<figure class='image'>
-															<img
-																style={{ height: "100%", objectFit: "cover" }}
-																src={props?.avatar}
-																alt=''
-															/>
-														</figure>
-														<h4 class='name'>{props?.name}</h4>
-														<span class='designation'>{props?.jobTitle}</span>
-														<div class='location'>
-															<i class='flaticon-map-locator'></i>{" "}
-															{props?.location}
+												<Link to={`/${props?._id}/profile`}>
+													<div className='mainCard'>
+														<div className='ImageHolding'>
+															<img src={props?.avatar} />
 														</div>
-														<a
-															href={`/${props?._id}/profile`}
-															class='theme-btn btn-style-one'>
-															<span class='btn-title'>View Profile</span>
-														</a>
+														<h4 style={{ margin: "10px", color: "black" }}>
+															{props?.name}
+														</h4>
+
+														<div style={{ color: "silver" }} className='devMan'>
+															Developer
+														</div>
+														<p>
+															I have 4 years of experience in IOS development.
+															My expertise are: -IOS/watchOS apps with objective
+															c and swift -Social Platform and third party sdk
+															integration -Payment Gateway / Wallet integration
+														</p>
+														<div
+															style={{
+																marginLeft: "10px",
+																fontWeight: "bold",
+																color: "#22D2B4",
+															}}>
+															<AiFillStar /> HIRE ME{" "}
+															<span
+																style={{
+																	fontWeight: "lighter",
+																	color: "silver",
+																}}>
+																-Nigeria
+															</span>
+														</div>
 													</div>
-												</div>
+												</Link>
 											)}
-										</>
+										</div>
 									) : null}
 								</>
 							))}
@@ -390,14 +428,15 @@ const HomeScreen = () => {
 									display: "flex",
 									justifyContent: "center",
 									alignItems: "center",
+									marginTop: "20px",
 								}}>
 								<Link to='/developers'>
 									<button
 										style={{
 											height: "50px",
 											width: "250px",
-											border: "1px solid #4182E8",
-											color: "#4182E8",
+											border: "1px solid #22D2B4",
+											color: "#22D2B4",
 											fontWeight: "bold",
 											borderRadius: "20px",
 										}}>
@@ -423,7 +462,13 @@ const HomeScreen = () => {
 										method that's best for you to easily get paid for your work.
 									</div>
 								</div>
-								<a href='/findjob' class='theme-btn -blue-dark'>
+								<a
+									style={{
+										background:
+											"linear-gradient(90deg, rgba(34,210,180,1) 0%, rgba(29,174,155,1) 46%, rgba(52,117,106,1) 91%)",
+									}}
+									href='/findjob'
+									class='theme-btn -blue-dark'>
 									Find Work
 								</a>
 							</div>
@@ -493,14 +538,20 @@ const HomeScreen = () => {
 						<a href='/findjob' className='theme-btn btn-one'>
 							Search Job
 						</a>
-						<a onClick={handleShow} className='theme-btn btn-two'>
+						<a
+							style={{
+								background:
+									"linear-gradient(90deg, rgba(34,210,180,1) 0%, rgba(29,174,155,1) 46%, rgba(52,117,106,1) 91%)",
+							}}
+							onClick={handleShow}
+							className='theme-btn btn-two'>
 							Apply Job Now
 						</a>
 					</div>
 				</div>
 			</section>
 
-			<section className='layout-pt-120 layout-pb-120'>
+			<section className='layout-pt-1201 layout-pb-120'>
 				<div className='auto-container'>
 					<div className='sec-title text-center'>
 						<h2>How It Works</h2>
@@ -595,7 +646,7 @@ const HomeScreen = () => {
 
 								<div class='blog-content'>
 									<h4>
-										<a href='#'>
+										<a href='/dashboard'>
 											Post a Project and Hire a Pro
 											<br />{" "}
 										</a>
@@ -613,7 +664,7 @@ const HomeScreen = () => {
 
 								<div class='blog-content'>
 									<h4>
-										<a href='#'>Browse Projects</a>
+										<a href='/dashboard'>Browse Projects</a>
 									</h4>
 									<div>
 										Meet clients you’re excited to work with and take your
@@ -631,7 +682,7 @@ const HomeScreen = () => {
 
 								<div class='blog-content'>
 									<h4>
-										<a href='#'>Join Qubators Network</a>
+										<a href='/dashboard'>Join Qubators Network</a>
 									</h4>
 									<div>
 										Join the largest christian developer network in the world
@@ -648,7 +699,7 @@ const HomeScreen = () => {
 
 								<div class='blog-content'>
 									<h4>
-										<a href='#'>Meet Developers</a>
+										<a href='/dashboard'>Meet Developers</a>
 									</h4>
 									<div>Get connected to developers around the world</div>
 								</div>
@@ -665,7 +716,7 @@ const HomeScreen = () => {
 							<h2>Find great work</h2>
 							{/* <div class="text">Lorem ipsum dolor sit amet elit, sed do eiusmod tempor</div> */}
 						</div>
-						<a href='#' class='link text-green'>
+						<a href='/dashboard' class='link text-green'>
 							Browse All Locations <span class='fa fa-angle-right'></span>
 						</a>
 					</div>
@@ -685,7 +736,7 @@ const HomeScreen = () => {
 										<div class='content'>
 											<h5>Projects Related to</h5>
 											<span class='total-jobs'>Web Developments</span>
-											<a href='job-list-v1.html' class='overlay-link'></a>
+											<a href='/dashboard' class='overlay-link'></a>
 										</div>
 									</div>
 								</div>
@@ -706,7 +757,7 @@ const HomeScreen = () => {
 										<div class='content'>
 											<h5>Build Website in</h5>
 											<span class='total-jobs'>Wordpress</span>
-											<a href='job-list-v1.html' class='overlay-link'></a>
+											<a href='/dashboard' class='overlay-link'></a>
 										</div>
 									</div>
 								</div>
@@ -727,7 +778,7 @@ const HomeScreen = () => {
 										<div class='content'>
 											<h5>Projects Related To</h5>
 											<span class='total-jobs'>Mobile Apps</span>
-											<a href='job-list-v1.html' class='overlay-link'></a>
+											<a href='/dashboard' class='overlay-link'></a>
 										</div>
 									</div>
 								</div>
@@ -748,7 +799,7 @@ const HomeScreen = () => {
 										<div class='content'>
 											<h5>Projects Related To</h5>
 											<span class='total-jobs'>BlockChain</span>
-											<a href='job-list-v1.html' class='overlay-link'></a>
+											<a href='/dashboard' class='overlay-link'></a>
 										</div>
 									</div>
 								</div>
@@ -804,7 +855,11 @@ const HomeScreen = () => {
 					<div class='btn-box'>
 						<a
 							href='/dashboard'
-							style={{ color: "black" }}
+							style={{
+								color: "white",
+								background:
+									"linear-gradient(90deg, rgba(34,210,180,1) 0%, rgba(29,174,155,1) 46%, rgba(52,117,106,1) 91%)",
+							}}
 							class='theme-btn btn-style-three'>
 							Get Started
 						</a>

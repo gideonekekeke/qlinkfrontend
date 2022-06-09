@@ -50,7 +50,7 @@ const DetailsBuild = () => {
 
 	const AddingFriend = async () => {
 		const res = await axios
-			.post(`https://qlinkappi.herokuapp.com/${myId}/friend`, captureDetails)
+			.post(`https://qlinkappi.herokuapp.com/api/user/${myId}/friend`, captureDetails)
 			.then((response) => {
 				setLoading(false);
 				console.log("i just added this friend now", response);

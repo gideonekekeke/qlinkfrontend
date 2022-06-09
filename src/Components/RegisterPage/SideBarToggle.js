@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext } from "react";
 import styled from "styled-components";
 import { CgMenu } from "react-icons/cg";
 import { ImCancelCircle } from "react-icons/im";
@@ -8,38 +8,45 @@ import { FaSchool } from "react-icons/fa";
 import { MdSchool } from "react-icons/md";
 import { MdContacts } from "react-icons/md";
 import { FaConnectdevelop } from "react-icons/fa";
-import { Link } from 'react-router-dom';
-import { GlobalContext } from '../Global/GlobalContext';
+import { Link } from "react-router-dom";
+import { GlobalContext } from "../Global/GlobalContext";
 const SideBarToggle = () => {
-	const {handleShow} = useContext(GlobalContext)
-  return (
-   <MainSide>
-						<button>Student Portal</button>
-						<SubMenu
-							>
-					<br/>
-					<br/>
-					<br/>
-					<br/>
-              
-                <li style={{fontSize : '17px', margin : '10px'}}><a href="/"><i class="la la-user-tie"></i>Home</a></li>
-                <li style={{fontSize : '17px', margin : '10px'}}><a href="/developers"><i class="la la-paper-plane"></i>Find Developers</a></li>
-                <li style={{fontSize : '17px', margin : '10px'}}><a href="/findjob"><i class="la la-briefcase"></i> Find Jobs </a></li>
-                <li style={{fontSize : '17px', margin : '10px'}}><a onClick={handleShow}><i class="la la-file-invoice"></i> Register/Login</a></li>
-           
+	const { handleShow } = useContext(GlobalContext);
+	return (
+		<MainSide>
+			<button>Student Portal</button>
+			<SubMenu>
+				<br />
+				<br />
+				<br />
+				<br />
 
+				<li style={{ fontSize: "17px", margin: "10px" }}>
+					<a href='/'>
+						<i class='la la-user-tie'></i>Home
+					</a>
+				</li>
+				<li style={{ fontSize: "17px", margin: "10px" }}>
+					<a href='/developers'>
+						<i class='la la-paper-plane'></i>Find Developers
+					</a>
+				</li>
+				<li style={{ fontSize: "17px", margin: "10px" }}>
+					<a href='/findjob'>
+						<i class='la la-briefcase'></i> Find Jobs{" "}
+					</a>
+				</li>
+				<li style={{ fontSize: "17px", margin: "10px" }}>
+					<a href='/register'>
+						<i class='la la-file-invoice'></i> Register/Login
+					</a>
+				</li>
+			</SubMenu>
+		</MainSide>
+	);
+};
 
-						
-						
-
-						
-						</SubMenu>
-					</MainSide>
-  )
-}
-
-export default SideBarToggle
-
+export default SideBarToggle;
 
 const MainSide = styled.div`
 	width: 100%;
@@ -48,8 +55,8 @@ const MainSide = styled.div`
 	height: 100vh;
 	position: fixed;
 	top: 0;
-    color : black;
-      transition : all 350ms;
+	color: black;
+	transition: all 350ms;
 `;
 
 // const SubUser = styled.div`
@@ -73,24 +80,21 @@ const MainSide = styled.div`
 // 	}
 // `;
 
-
 const SubMenu = styled.div`
-		width: 250px;
-		height: 100vh;
-		background-color: white;
-		/* float: right; */
-		border-radius: 0 0 0px 10px;
-		display: flex;
-		flex-direction: column;
-		padding-left: 20px;
-		position: fixed;
-		color: black;
-		z-index: 1000;
-        top : 0;
-		/* padding-top: 50px;
+	width: 250px;
+	height: 100vh;
+	background-color: white;
+	/* float: right; */
+	border-radius: 0 0 0px 10px;
+	display: flex;
+	flex-direction: column;
+	padding-left: 20px;
+	position: fixed;
+	color: black;
+	z-index: 1000;
+	top: 0;
+	/* padding-top: 50px;
 		padding-left: 50px; */
 	z-index: 1000;
-    transition : all 350ms;
-
-	
+	transition: all 350ms;
 `;

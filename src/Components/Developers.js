@@ -1,5 +1,7 @@
 import axios from "axios";
 import React, { useContext } from "react";
+import { AiFillStar } from "react-icons/ai";
+import { Link } from "react-router-dom";
 import Footer from "./Footer";
 import { GlobalContext } from "./Global/GlobalContext";
 import Header from "./Header";
@@ -29,13 +31,13 @@ const Developers = () => {
 						<h1>Find Developers</h1>
 						<ul class='page-breadcrumb'>
 							<li>
-								<a href='index.html'>Home</a>
+								<a href='/'>Home</a>
 							</li>
 							<li>Developers</li>
 						</ul>
 					</div>
 					<div class='job-search-form'>
-						<form method='post' >
+						<form method='post'>
 							<div class='row'>
 								<div class='form-group col-lg-4 col-md-12 col-sm-12'>
 									<span class='icon flaticon-search-1'></span>
@@ -158,66 +160,55 @@ const Developers = () => {
 									</div>
 								</div>
 
-								<div class='row'>
-								{
-									data.map((props)=>(
+								<div div className='CardHold'>
+									{data.map((props) => (
 										<>
-										{
-											props?.isDeveloper ? 
-											<>
+											{props?.isDeveloper ? (
+												<>
+													{current?._id === props._id ? null : (
+														<Link to={`/${props?._id}/profile`}>
+															<div className='mainCard'>
+																<div className='ImageHolding'>
+																	<img src={props?.avatar} />
+																</div>
+																<h4 style={{ margin: "10px", color: "black" }}>
+																	{props?.name}
+																</h4>
 
-											{
-											   current?._id === props._id? null : 	<div class='candidate-block-four col-lg-4 col-md-6 col-sm-12'>
-										      <div class='inner-box'>
-											<ul class='job-other-info'>
-												<li class='green'>Featured</li>
-											</ul>
-											<span class='thumb'>
-												<img
-													style={{ height: "100%", objectFit: "cover" }}
-													src={props?.avatar}
-													alt=''
-												/>
-											</span>
-											<h3 class='name'>
-												<a href='#'>{props?.name}</a>
-											</h3>
-											<span class='cat'>{props?.jobTitle}</span>
-											<ul class='job-info'>
-												<li>
-													<span class='icon flaticon-map-locator'></span> {props?.location}
-												</li>
-												<li>
-													<span class='icon flaticon-money'></span> $99 / hour
-												</li>
-											</ul>
-											<ul class='post-tags'>
-												<li>
-													<a href='#'>App</a>
-												</li>
-												<li>
-													<a href='#'>Design</a>
-												</li>
-												<li>
-													<a href='#'>Digital</a>
-												</li>
-											</ul>
-											<a href= {`/${props?._id}/profile`} class='theme-btn btn-style-three'>
-												View Profile
-											</a>
-										</div>
-									</div>
-											}
-											
-											</>
-										 : null
-										}
-										
+																<div
+																	style={{ color: "silver" }}
+																	className='devMan'>
+																	Developer
+																</div>
+																<p>
+																	I have 4 years of experience in IOS
+																	development. My expertise are: -IOS/watchOS
+																	apps with objective c and swift -Social
+																	Platform and third party sdk integration
+																	-Payment Gateway / Wallet integration
+																</p>
+																<div
+																	style={{
+																		marginLeft: "10px",
+																		fontWeight: "bold",
+																		color: "#22D2B4",
+																	}}>
+																	<AiFillStar /> HIRE ME{" "}
+																	<span
+																		style={{
+																			fontWeight: "lighter",
+																			color: "silver",
+																		}}>
+																		-Nigeria
+																	</span>
+																</div>
+															</div>
+														</Link>
+													)}
+												</>
+											) : null}
 										</>
-									))
-								}
-
-								
+									))}
 								</div>
 
 								<nav class='ls-pagination'>

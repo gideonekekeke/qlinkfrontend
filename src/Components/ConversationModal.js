@@ -9,8 +9,10 @@ const ConversationModal = ({ toggleShows, data }) => {
 	const hist = useNavigate();
 	const [message, setMessage] = React.useState("");
 	const [loading, setLoading] = React.useState(false);
-	const readData = useSelector((state) => state?.persistedReducer?.AddingFriends);
-    console.log("hello reader",readData)
+	const readData = useSelector(
+		(state) => state?.persistedReducer?.AddingFriends,
+	);
+	console.log("hello reader", readData);
 	const pastData = {
 		message: message,
 		sendTo: readData?.addedID,
@@ -22,10 +24,7 @@ const ConversationModal = ({ toggleShows, data }) => {
 	const ChatMessage = async (e) => {
 		// e.preventDefault();
 		await axios
-			.post(
-				`https://qlinkappi.herokuapp.com/api/user/${readData._id}/chat`,
-				pastData,
-			)
+			.post(`https://qlinkappi.herokuapp.com/${readData._id}/chat`, pastData)
 
 			.then((response) => {
 				hist("/messages");

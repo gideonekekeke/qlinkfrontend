@@ -208,6 +208,9 @@ p,
 	transition: all 300ms ease;
 }
 
+
+
+
 .section {
 	padding: 60px 0 30px;
 }
@@ -310,6 +313,60 @@ Checkbox
 	line-height: 20px;
 	color: #696969;
 }
+
+.CardHold{
+color : black;
+/* margin: 200px; */
+display : flex;
+flex-wrap: wrap;
+/* font-family: poppins; */
+}
+
+.mainCard{
+    /* height: 400px; */
+    width: 300px;
+    background-color: white;
+    border-radius: 3px;
+    box-shadow: -1px 3px 5px -2px rgba(0, 0, 0, 0.2);
+    padding-bottom: 30px;
+    margin : 10px
+}
+.mainCard p{
+   margin-left: 10px;
+   width : 290px;
+   color : rgb(124, 124, 124);
+   font-size: 15px;
+}
+
+.ImageHolding{
+    height : 230px;
+    width : 100%;
+    background : silver;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+.ImageHolding img{
+   height : 100%;
+   width: 100%;
+    background : silver;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    object-fit: cover;
+}
+.mainCard:hover{
+  transform: scale(1.01);
+  transition: all 350ms;
+  cursor: pointer;
+}
+
+
+.devMan{
+    color : rgb(124, 124, 124);
+    margin-left: 10px;
+    margin-top: -10px;
+}
+
+
 
 .checkboxes label span {
 	color: #909090;
@@ -6485,6 +6542,7 @@ Job Section
 	box-sizing: border-box;
 	border-radius: 10px;
 	transition: all 300ms ease;
+	
 }
 
 .job-block .inner-box:hover {
@@ -9609,6 +9667,7 @@ Section Title
 .sec-title {
 	position: relative;
 	margin-bottom: 50px;
+	
 }
 
 .sec-title .sub-title {
@@ -11255,6 +11314,8 @@ Candidates Section
 	transition: all 300ms ease;
 	text-align: center;
 }
+
+
 
 .candidate-block .inner-box:hover {
 	box-shadow: 0px 6px 15px rgba(64, 79, 104, 0.05);
@@ -16108,6 +16169,11 @@ Product Tabs
 
 .layout-pt-120 {
 	padding-top: 120px !important;
+	
+}
+.layout-pt-1201 {
+	padding-top: 120px !important;
+	
 }
 
 .layout-pt-150 {
@@ -16134,6 +16200,9 @@ Product Tabs
 	.layout-pt-120 {
 		padding-top: 90px !important;
 	}
+	.layout-pt-1201 {
+		padding-top: 90px !important;
+	}
 	.layout-pb-120 {
 		padding-bottom: 90px !important;
 	}
@@ -16142,6 +16211,9 @@ Product Tabs
 @media (max-width: 767px) {
 	.layout-pt-120 {
 		padding-top: 70px !important;
+	}
+	.layout-pt-1201 {
+		display : none
 	}
 	.layout-pt-60 {
 		padding-top: 50px !important;
@@ -18243,6 +18315,7 @@ Product Tabs
 .tab-buttons-wrap {
 	display: flex;
 	justify-content: center;
+
 }
 
 .tab-buttons.-pills-condensed {
@@ -18387,6 +18460,10 @@ Product Tabs
 	color: white;
 }
 
+.bolding_text{
+	display : none
+}
+
 .main-header.header-style-four.-type-16 .main-menu {
 	margin-left: 15px;
 }
@@ -18491,11 +18568,13 @@ Product Tabs
 	justify-content: center;
 	flex-wrap: wrap;
 	margin: -15px -30px;
+	
 }
 
 @media (max-width: 991px) {
 	.banner-section-four.-type-16 .features-icons {
 		padding-top: 50px;
+		display : none
 	}
 }
 
@@ -18534,6 +18613,14 @@ Product Tabs
 	color: white;
 	transition: all 0.15s ease;
 }
+
+
+@media (max-width:780px){
+	.features-icons{
+		display : none;
+	}
+}
+
 
 .banner-section-four.-type-16 .features-icons .item .title {
 	margin-top: 15px;
@@ -18627,7 +18714,7 @@ Product Tabs
 }
 
 .work-block.-type-4:hover .icon-wrap {
-	background-color: #4182e8;
+	background-color:linear-gradient(90deg, rgba(34,210,180,1) 0%, rgba(29,174,155,1) 46%, rgba(52,117,106,1) 91%) ;
 }
 
 .work-block.-type-4:hover .icon::before {
@@ -19439,6 +19526,7 @@ Banner Section Four
 	align-items: center;
 	flex-direction: column;
 	padding: 120px 0;
+	background-image: url("../images/index-16/header/3.png");
 }
 
 .banner-section-four .title-box {

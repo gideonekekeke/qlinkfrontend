@@ -82,7 +82,7 @@ const Header = () => {
               {
                 current?.verified ?  <a href='/dashboard'  class="theme-btn btn-style-six call-modal">DashBoard</a> :  <a href='#' onClick = {handleShow} class="theme-btn btn-style-six call-modal">Login / Register</a>
               }
-              <a href="dashboard-post-job.html" class="theme-btn btn-style-five">Job Post</a>
+              <a href="/dashboard" class="theme-btn btn-style-five">Job Post</a>
             </div>
           </div>
         </div>

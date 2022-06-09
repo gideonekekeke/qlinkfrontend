@@ -77,7 +77,7 @@ const DashMessages = () => {
 		// e.preventDefault();
 		await axios
 			.post(
-				`https://qlinkappi.herokuapp.com/api/user/${readData._id}/chat`,
+				`https://qlinkappi.herokuapp.com/${readData._id}/chat`,
 				pastData,
 			)
 
@@ -95,7 +95,7 @@ const DashMessages = () => {
 		// e.preventDefault();
 		await axios
 			.post(
-				`https://qlinkappi.herokuapp.com/api/user/${readData._id}/chat`,
+				`https://qlinkappi.herokuapp.com/${readData._id}/chat`,
 				pastData2,
 			)
 			.then((response) => {

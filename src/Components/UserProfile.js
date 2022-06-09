@@ -43,26 +43,27 @@ const UserProfile = () => {
 
 	const AddingFriend = async () => {
 		await axios
-			.post(`https://qlinkappi.herokuapp.com/${myId}/friend`, captureDetails)
+			.post(
+				`https://qlinkappi.herokuapp.com/api/user/${myId}/friend`,
+				captureDetails,
+			)
 			.then((response) => {
 				hist("/messages");
 				window.location.reload();
 				setLoading(false);
-			}).catch((error) => {
+			})
+			.catch((error) => {
 				if (error.response.status === 400) {
 					swal({
-							title: "cannot procceed , please Register or login your account",
-							text: "",
-							icon: "error",
-							button: "ok",
-						}).then((value) => {
-						hist("/register")
-						});
-
-					}
-			})
-
-		
+						title: "cannot procceed , please Register or login your account",
+						text: "",
+						icon: "error",
+						button: "ok",
+					}).then((value) => {
+						hist("/register");
+					});
+				}
+			});
 	};
 
 	const getAllFriends = async () => {
@@ -224,14 +225,12 @@ const UserProfile = () => {
 																}}>
 																<div className='row clearfix'>
 																	<div className='col-lg-12 col-md-12 col-sm-12 form-group'>
-																	 
-																	  	<button
+																		<button
 																			className='theme-btn btn-style-one'
 																			type='submit'
 																			name='submit-form'>
 																			Start Conversation
 																		</button>
-																	 
 																	</div>
 																</div>
 															</form>
